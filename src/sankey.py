@@ -11,6 +11,11 @@ couleur_destination = ["blue", "orange", "orange", "blue", "blue"]
 
 nb_voyages = [12, 1, 2, 7, 4, 2, 4, 6, 7, 7]
 
+#Converts dataframes to lists
+list_departure_harbours = df_departure.index.tolist()
+list_arrival_harbours = df_arrival.index.tolist()
+list_departure_counts = df_departure.tolist()
+list_arrival_counts = df_arrival.tolist()
 
 fig = go.Figure(data=[go.Sankey(
     node = dict(

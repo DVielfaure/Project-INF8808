@@ -65,3 +65,32 @@ def get_barchart_data(data,type):
     df = df[[type+" Hardour", type+" Region","Trafic"]]
 
     return df
+
+
+def get_sankey_data(dataframe, port_central):
+    '''
+        Creates pandas dataframes ofr arrival and departure harbours.
+        Args:
+            dataframe: The source dataframe 
+        Returns:
+            df_provenance: Dataframe corresponding to departure
+            df_destination: Dataframe corresponding to arrival
+    '''
+    
+    #Drop unnecessary columns
+    dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
+                    'Departure Latitude', 'Departure Longitude',
+                    'Arrival Longitude', 'Arrival Latitude',
+                    'Vessel Type', 'DeadWeight Tonnage',
+                    'Maximum Draugth', 'Arrival Date'], 1, inplace=True)
+    
+    #Filter with the right central harbour
+    df_departure = dataframe.loc[dataframe['Arrival Hardour'] == port_central]
+    df_arrival = dataframe.loc[dataframe['Departure Hardour'] == port_central]
+
+    #Count number of occurences
+    df_departure = df_departure['Departure Hardour'].value_counts()
+    df_arrival = df_arrival['Arrival Hardour'].value_counts()
+    
+    #Returns the two dataframes
+    return df_departure, df_arrival
