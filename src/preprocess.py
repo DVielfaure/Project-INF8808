@@ -1,7 +1,51 @@
-'''
-    Contains some functions to preprocess the data used in the visualisation.
-'''
 import pandas as pd
+
+
+def convert_datetime(df):
+    '''
+        Converts the date to datetime format.
+
+        Args:
+            df: The source df 
+        Returns:
+            df: The corrected dataframe
+    '''
+    df['Departure Date']= pd.to_datetime(df['Departure Date'])
+    df['Arrival Date']= pd.to_datetime(df['Arrival Date']) 
+    return df
+
+def correct_data(df):
+    '''
+    Correction of swapped dates
+    '''
+    convert_datetime(df) 
+    df[["Departure Date","Arrival Date"]] = df[["Departure Date","Arrival Date"]].where(df['Departure Date'] < df['Arrival Date'], df[["Arrival Date","Departure Date"]].values )
+    return df
+
+def traffic_per_time(df, scale="year"):
+    '''
+        Converts the date to datetime format.
+
+        Args:
+            df: The source df 
+        Returns:
+            df: The traffic dataframe group by year and harbour
+    '''
+    #convertion in datetime 
+    convert_datetime(df) 
+    
+    if scale == "year":
+        df['Departure Year']= (df['Departure Date']).dt.year
+
+        df_traffic = df.groupby(["Departure Hardour","Departure Year"]).size().to_frame(name="Traffic").reset_index()
+    
+    if scale == "day":
+        df["Departure Day"] = (df['Departure Date']).dt.date
+
+        df_traffic = df.groupby(["Departure Hardour","Departure Day"]).size().to_frame(name="Traffic").reset_index()
+        
+    return df_traffic
+        
 
 
 def get_map_data_extended(data,type):
