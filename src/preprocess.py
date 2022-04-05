@@ -13,6 +13,7 @@ def convert_datetime(df):
     df['Departure Date']= pd.to_datetime(df['Departure Date'])
     df['Arrival Date']= pd.to_datetime(df['Arrival Date']) 
     return df
+    
 
 def correct_data(df):
     '''
@@ -20,6 +21,21 @@ def correct_data(df):
     '''
     convert_datetime(df) 
     df[["Departure Date","Arrival Date"]] = df[["Departure Date","Arrival Date"]].where(df['Departure Date'] < df['Arrival Date'], df[["Arrival Date","Departure Date"]].values )
+    return df
+
+def filter_df(df,scale,place):
+    '''
+    Filter data on a specific scale: 
+    example: filter on cleveland harbour:
+    df = filter_df(df,"harbour","Cleveland")
+    '''
+    if scale == "all":
+        df = df
+    if scale == "region":
+        df = df[df["Departure Region"]== place ]
+    if scale == "harbour":
+        df = df[df["Departure Hardour"]== place ]
+        
     return df
 
 def traffic_per_time(df, scale="year"):
