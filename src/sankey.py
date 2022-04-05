@@ -1,40 +1,64 @@
 import plotly.graph_objects as go
 
-#Inputs
-ports_provenance = ["Quebec", "Autres", "Ingonish", "New York (USA)", "Trois-Rivières"]
-port_central = ["Montreal"]
-ports_destination = ["Autres", "New York (USA)", "Le Havre (France)", "Quebec", "St. Andrews"]
+def trace_sankey(df_departure, df_arrival, port_central):
 
-couleur_provenance = ["blue", "blue", "blue", "orange", "blue"]
-couleur_central = ["gray"]
-couleur_destination = ["blue", "orange", "orange", "blue", "blue"]
+  #Converts dataframes to lists
+  list_departure_harbours = df_departure.index.tolist()
+  list_arrival_harbours = df_arrival.index.tolist()
+  list_departure_counts = df_departure.tolist()
+  list_arrival_counts = df_arrival.tolist()
+  
+  #Count others
+  departure_other_count = 0
+  for n1 in list_departure_counts[5:]:
+    departure_other_count += n1
+    
+  arrival_other_count = 0
+  for n2 in list_arrival_counts[5:]:
+    arrival_other_count += n2
+    
+  #Keep only top 5
+  list_departure_harbours = df_departure.index.tolist()[0:5]
+  list_arrival_harbours = df_arrival.index.tolist()[0:5]
+  list_departure_counts = df_departure.tolist()[0:5]
+  list_arrival_counts = df_arrival.tolist()[0:5]
+  
+  #Append others to list
+  list_departure_harbours.append("Others")
+  list_arrival_harbours.append("Others")
+  list_departure_counts.append(departure_other_count)
+  list_arrival_counts.append(arrival_other_count)
+  
+  #Concatenate lists for sankey
+  label = []
+  label.extend(list_arrival_harbours)
+  label.append(port_central)
+  label.extend(list_departure_harbours)
+  
+  value=[]
+  value.extend(list_arrival_counts)
+  value.extend(list_departure_counts)
 
-nb_voyages = [12, 1, 2, 7, 4, 2, 4, 6, 7, 7]
+  
+  #Trace sankey
+  fig = go.Figure(data=[go.Sankey(
+      node = dict(
+        pad = 15,
+        thickness = 20,
+        line = dict(color = "grey", width = 0.0),
+        label = label,
+        color = ["blue", "blue", "blue", "blue", "blue", "blue", "gray", "blue", "blue", "blue", "blue", "blue", "blue"]
+      ),
+      link = dict(
+        source = [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6],
+        target = [6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12],
+        value = value,
+        hovertemplate='Provenance: %{source.label}<br />'+
+          'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
+    ))])
 
-#Converts dataframes to lists
-list_departure_harbours = df_departure.index.tolist()
-list_arrival_harbours = df_arrival.index.tolist()
-list_departure_counts = df_departure.tolist()
-list_arrival_counts = df_arrival.tolist()
+  #Add title
+  fig.update_layout(title_text="Flux entrants et flux sortants du port de " + port_central, font_size=15)
 
-fig = go.Figure(data=[go.Sankey(
-    node = dict(
-      pad = 15,
-      thickness = 20,
-      line = dict(color = "grey", width = 0.0),
-      label = ["Quebec", "Autres", "Ingonish", "New York (USA)", "Trois-Rivières", "Montreal", "Autres", "New York (USA)", "Le Havre (France)", "Quebec", "St. Andrews"],
-      color = ["blue", "blue", "blue", "orange", "blue", "gray", "blue", "orange", "orange", "blue", "blue"]
-    ),
-    link = dict(
-      source = [0, 1, 2, 3, 4, 5, 5, 5, 5, 5],
-      target = [5, 5, 5, 5, 5, 6, 7, 8, 9, 10],
-      value = [12, 1, 2, 7, 4, 2, 4, 6, 7, 7],
-      hovertemplate='Provenance: %{source.label}<br />'+
-        'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
-  ))])
-
-#Add title
-fig.update_layout(title_text="Flux entrants et flux sortants du port de " + port_central[0], font_size=15)
-
-#Show figure for development
-fig.show()
+  #Show figure for development
+  fig.show()
