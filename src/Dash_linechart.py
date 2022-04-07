@@ -1,12 +1,12 @@
 from datetime import datetime as dt
 import plotly.express as px
 import dash
-import dash_html_components as html
-import dash_core_components as dcc
+from dash import html
+from dash import dcc
 from dash.dependencies import Input, Output
 import pandas as pd
 
-df = pd.read_csv("TRIP.csv")
+df = pd.read_csv("./data/TRIP.csv")
 df['Departure Date'] = pd.to_datetime(df['Departure Date'])
 df.set_index('Departure Date', inplace=True)
 #print(df[:5][['BUSINESS_NAME', 'LATITUDE', 'LONGITUDE', 'APP_SQ_FT']])
