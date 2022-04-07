@@ -53,12 +53,12 @@ def traffic_per_time(df, scale="year"):
     if scale == "year":
         df['Departure Year']= (df['Departure Date']).dt.year
 
-        df_traffic = df.groupby(["Departure Hardour","Departure Year"]).size().to_frame(name="Traffic").reset_index()
+        df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
     
     if scale == "day":
         df["Departure Day"] = (df['Departure Date']).dt.date
 
-        df_traffic = df.groupby(["Departure Hardour","Departure Day"]).size().to_frame(name="Traffic").reset_index()
+        df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
         
     return df_traffic
         
