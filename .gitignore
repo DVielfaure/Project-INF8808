@@ -2,3 +2,4 @@
 src/data/TRIP.csv
 venv
 requirements.txt
+__pycache__
