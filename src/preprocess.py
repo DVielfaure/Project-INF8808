@@ -1,6 +1,28 @@
 import pandas as pd
 
 
+def create_dataframe_from_csv():
+    list_csv = ['Departure Date', 
+            'Departure Hardour', 'Departure Region', 
+            'Departure Latitude', 'Departure Longitude', 
+            'Arrival Date', 'Arrival Hardour', 
+            'Arrival Region', 'Arrival Latitude', 
+            'Arrival Longitude', 'Vessel Type', 
+            'Lenght', 'Width', 
+            'DeadWeight Tonnage', 'Maximum Draugth']
+
+    #Initial dataframe
+    dataframe = pd.read_csv('./data/Id.csv')
+
+    #Combine dataframes
+    for file in list_csv:
+        file_name = "data/" + file + ".csv"
+        dataframe_temporary = pd.read_csv(file_name)
+        dataframe = dataframe.join(dataframe_temporary)
+        
+    return dataframe
+
+
 def convert_datetime(df):
     '''
         Converts the date to datetime format.
