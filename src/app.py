@@ -23,8 +23,6 @@ import plotly.graph_objects as go
 
 import preprocess as preproc
 import map_viz
-import helper
-import callback
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.express as px
@@ -36,7 +34,7 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-dataframe = preprocess.create_dataframe_from_csv()
+data = preproc.create_dataframe_from_csv()
 
 #données preprocess
 map_data_departure = preproc.get_map_data(data,"Departure")
