@@ -14,8 +14,12 @@ import json
 from tarfile import FIFOTYPE
 from zipfile import ZIP_MAX_COMMENT
 import dash
-from dash import html
-from dash import dcc
+
+import dash_html_components as html
+import dash_core_components as dcc
+#import dash_html_components as html
+#import dash_core_components as dcc
+
 from dash.dependencies import Input, Output, State
 from matplotlib.pyplot import bar, figure
 from dash.exceptions import PreventUpdate
@@ -143,13 +147,13 @@ html.Div([
             html.H2("Tous les ports",id='selection', style={'margin-top': 0, "margin-left":0}),
             html.H4(id='slider_limit_text', style={'margin-top': 20}),
             html.H4(id='update_relayoutData', style={'margin-top': 20}),
-            html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
+            #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
                    
         ], style={"margin-left":100, "width":500,'float': "left"}),
 
     
         
-        html.H4(id='coord', style={'margin-top': 20}),
+        #html.H4(id='coord', style={'margin-top': 20}),
 
         html.Div([
             html.Div([
@@ -162,9 +166,7 @@ html.Div([
         ]),
 
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
-        html.Div([
-            html.H4(children="Test store",id='test_store')], style={'float': 'left'}
-        )
+       
     ])
 
 #html.H4(id='slider_limit_text', style={'margin-top': 20}-),
@@ -179,31 +181,9 @@ app.css.append_css({
 })
 '''
 
-@app.callback(Output('test_score','children'),
-                [Input('store_prev_zoom','data')])
-def test(store_data):
-    print("store", dastore_datata)
-    return store_data
-
 
 #conserver la valeur du précédent zoom dans prev_zoom_h4
-@app.callback([Output('prev_zoom_h4','children'),
-                Output('store_prev_zoom', 'data')],
-              [Input('map_departure', 'relayoutData')]
-              )
-def update_zoom(relayoutData):
-    print("update_zoom",relayoutData)
-    if relayoutData != None and relayoutData != {'autosize': True}:
-        if 'geo.projection.scale' in relayoutData.keys():
-            return(relayoutData['geo.projection.scale'], relayoutData['geo.projection.scale'])
-        else:
-            raise PreventUpdate
-    else:
-        return zoom_init['geo.projection.scale'], zoom_init['geo.projection.scale']
-    ""
-
-"""#conserver la valeur du précédent zoom dans prev_zoom_h4
-@app.callback(Output('prev_zoom_h4','children'),
+@app.callback(Output('store_prev_zoom', 'data'),
               [Input('map_departure', 'relayoutData')]
               )
 def update_zoom(relayoutData):
@@ -215,7 +195,6 @@ def update_zoom(relayoutData):
             raise PreventUpdate
     else:
         return zoom_init['geo.projection.scale']
-    """""
 
 
 zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, 'geo.center.lon': -85.70231819775765, 'geo.center.lat': 44.96680548384988,'geo.projection.scale':24.25146506416641} , 
@@ -238,9 +217,9 @@ zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, '
               Input('region_dropdown','value'),
               Input('harbour_dropdown','value')],
               [State('map_departure', 'relayoutData'),
-                State('prev_zoom_h4','children'),
+                State('store_prev_zoom','data'),
                 State('map_departure','figure')])
-def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,children,figure):
+def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_zoom,figure):
     
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -251,10 +230,10 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,child
         #évite que le zoom inital ne se perde au chargement
             #si pas de région de sélectionnée, on update la map avec les ports au dessus de la limite et le même zoom
         if relayoutData != None and region_dropdown == None:
-            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),relayoutData,children)
+            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),relayoutData,prev_zoom)
             #si il y a une région de sélectionnée, on update la map avec les ports au dessus de la limite et le zoom de la région
         elif relayoutData != None and region_dropdown != None:
-            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),zooms[region_dropdown],children)
+            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),zooms[region_dropdown],prev_zoom)
         else : #cas où relayoutData= None, à l'initialisation par exemple
             fig = figure
         return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), fig
