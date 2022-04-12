@@ -81,7 +81,18 @@ html.Div([
         #div titre
         html.Div([
             html.H3('Trafic maritime par Xperts Solutions Technologies')
-        ],style={'margin-left': 50, "justify-content": "center"}, className='titlerow' ),
+        ]
+        #,style={'margin-left': 50, "justify-content": "center"}
+        , className='titlerow' ),
+
+        html.Div([
+            html.H2("Tous les ports",id='selection', style={'margin-top': 0, "margin-left":0}),
+            html.H4(id='slider_limit_text', style={'margin-top': 20}),
+            html.H4(id='update_relayoutData', style={'margin-top': 20}),
+            #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
+                   
+        ]),
+        #, style={"margin-left":100, "width":500,'float': "left"}),
 
         #div row 1
         html.Div([
@@ -98,7 +109,8 @@ html.Div([
                     value=2,
                     updatemode='drag'
                 )
-            ],style={"width":500, 'float': "left"}),
+            ]),
+            #,style={"width":500, 'float': "left"}),
 
             #div dropdown et barchart
             html.Div([
@@ -114,7 +126,8 @@ html.Div([
                             placeholder="Region"
                             
                         )
-                    ],style={"width":200, 'heigth':60, 'margin-left':20, 'float': "left"} ),
+                    ]),
+                    #,style={"width":200, 'heigth':60, 'margin-left':20, 'float': "left"} ),
 
                     #dropdown Harbour
                     html.Div([ 
@@ -125,8 +138,10 @@ html.Div([
                             ],
                             placeholder="Harbour"
                         )
-                    ],style={"width":250, 'heigth':60, 'margin-left':20, 'float': "left"} )
-                ],style={'heigth':60, "width":500}
+                    ])
+                    #,style={"width":250, 'heigth':60, 'margin-left':20, 'float': "left"} )
+                ]
+                #,style={'heigth':60, "width":500}
                 ),
 
                 #ligne barchart
@@ -138,36 +153,30 @@ html.Div([
                             )]
                             ,style={"width":500,'max-height':200, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
                     ),
-                ],style={'float': "left", 'margin-top': 0})
-            ],style={"height":250, 'float': "left"}),
+                ])
+                #,style={'float': "left", 'margin-top': 0})
+            ])
+            #,style={"height":250, 'float': "left"}),
 
-        ]),
-
-        html.Div([
-            html.H2("Tous les ports",id='selection', style={'margin-top': 0, "margin-left":0}),
-            html.H4(id='slider_limit_text', style={'margin-top': 20}),
-            html.H4(id='update_relayoutData', style={'margin-top': 20}),
-            #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
-                   
-        ], style={"margin-left":100, "width":500,'float': "left"}),
-
-    
+        ], id='first_row', style={'display':'flex', 'width':'100%'}),
         
         #html.H4(id='coord', style={'margin-top': 20}),
 
         html.Div([
             html.Div([
                 dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-            ], style={'float': "left","width":1000}),
+            ]),
+            #, style={'float':'left', "width":1000}),
 
             html.Div([
                         dcc.Graph(id="sankey",figure=fig_sankey) 
-                    ], style={'float': "left","width":1000})  
-        ]),
+                    ])
+                    #style={'float':'left', "width":1000})  
+        ], id='second_row', style={'display':'flex'}),
 
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
        
-    ])
+], id='global', style={'display':'flex', 'align_items':'stretch', 'flex-direction':'column'})
 
 #html.H4(id='slider_limit_text', style={'margin-top': 20}-),
 #hidden div , style={‘display’:‘none’}
