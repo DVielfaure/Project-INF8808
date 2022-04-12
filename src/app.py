@@ -67,7 +67,7 @@ fig_departure = map_viz.get_map(map_data_departure,"Departure",100,last_zoom=zoo
 
 fig_bar = map_viz.get_barchart(barchart_data,"Departure",100)
 
-fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data)
+fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
 
 def transform_value(value):
@@ -80,8 +80,11 @@ app.layout = \
 html.Div([
         #div titre
         html.Div([
-            html.H3('Trafic maritime par Xperts Solutions Technologies')
-        ], style={"justify-content": "center"}
+            html.H1('Trafic maritime par Xperts Solutions Technologies',
+                style={
+                    'textAlign': 'center', 
+                    "font-family": 'verdana'})
+        ], style={"style=text-align":"center", "align":"center", "justify":"center"}
         #,style={'margin-left': 50, "justify-content": "center"}
         , className='titlerow' ),
 
@@ -324,14 +327,14 @@ def get_coord(relayoutData):
 def affichage_selection(harbour_value, region_value):
 
     if harbour_value == None and region_value != None:  
-        return "Harbours of "+ region_value
+        return "Ports de la region:  "+ region_value
 
     if harbour_value != None:
         port_central = harbour_value
-        return "Harbour of "+ harbour_value.casefold().title()
+        return "Port "+ harbour_value.casefold().title()
     
     if harbour_value == None and region_value == None:  
-        return "Harbours of Canada"
+        return "Tous les ports du Canada"
 
         """#affichage texte de la sélection (region, port ou all (Canada)) + update slider
 @app.callback([Output('selection','children'),
@@ -417,5 +420,5 @@ def update_bar_chart_traffic(harbour_value,fig):
         return fig
     if harbour_value != None:
         bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=harbour_value)
-        fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data)
+        fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, harbour_value)
         return fig_bar_traffic

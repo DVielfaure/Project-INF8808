@@ -4,7 +4,7 @@
 '''
 
 from turtle import width, window_height, window_width
-from attr import dataclass
+# from attr import dataclass
 import plotly.graph_objects as go
 import plotly.express as px
 
