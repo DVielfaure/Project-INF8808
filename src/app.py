@@ -29,6 +29,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 
 import sankey
+import bar_chart
 
 app = dash.Dash(__name__)
 app.title = 'Projet Xperts Solutions'
@@ -45,9 +46,10 @@ map_data_arrival = preprocess.get_map_data(data,"Arrival")
 
 barchart_data = preprocess.get_barchart_data(data,"Departure")
 
-
 # #Get dataframes for Sankey diagram
 sankey_data = preprocess.get_sankey_data(data, port_central)
+
+bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
 
 # #Call function to trace sankey
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
@@ -60,6 +62,8 @@ fig_departure = map_viz.get_map(map_data_departure,"Departure",100,last_zoom=zoo
 #fig_arrival = map_viz.get_map(map_data_arrival,"Arrival",0,last_zoom=None,prev_scale=None)
 
 fig_bar = map_viz.get_barchart(barchart_data,"Departure",100)
+
+fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data)
 
 
 def transform_value(value):
@@ -128,7 +132,7 @@ app.layout = html.Div([
                     html.Div([ 
                         #html.H3('Column 2'),
                         #gérer la taille du bar chart en fonction du nombre de ligne de la figure (mais il faut sélectionner la bonne)
-                        dcc.Graph(id="barchart",figure= fig_bar,style={'height':max(4*(len(fig_bar.data[0]['y'])-14),100)}
+                        dcc.Graph(id="barchart",figure= fig_bar, style={'height':max(4*(len(fig_bar.data[0]['y'])-14),100)}
                             )]
                             ,style={"width":500,'max-height':200, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
                     ),
@@ -153,6 +157,9 @@ app.layout = html.Div([
             dcc.Graph(id="sankey",figure=fig_sankey) 
         ], style={'float': "left","width":1000}) ,
 
+        html.Div([
+            dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
+        ], style={'float': "left","width":1000}) ,
 
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
         html.Div([
@@ -175,7 +182,7 @@ app.css.append_css({
 @app.callback(Output('test_score','children'),
                 [Input('store_prev_zoom','data')])
 def test(store_data):
-    print("store",dastore_datata)
+    print("store", dastore_datata)
     return store_data
 
 

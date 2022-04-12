@@ -73,17 +73,16 @@ def traffic_per_time(df, scale="year"):
     convert_datetime(df) 
     
     if scale == "year":
-        df['Departure Year']= (df['Departure Date']).dt.year
+        df['Date']= (df['Departure Date']).dt.year
 
         df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
     
     if scale == "day":
-        df["Departure Day"] = (df['Departure Date']).dt.date
+        df["Date"] = (df['Departure Date']).dt.date
 
         df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
         
     return df_traffic
-        
 
 
 def get_map_data_extended(data,type):
@@ -177,3 +176,12 @@ def get_sankey_data(dataframe, port_central):
     
     #Returns the two dataframes
     return df_departure, df_arrival
+
+def get_bar_traffic_data(df, time_scale, spatial_scale, place):
+    df_cop = df.copy()
+    df_cop = correct_data(df_cop)
+
+    df_cop = filter_df(df_cop, spatial_scale, place)
+    df_cop = traffic_per_time(df_cop, time_scale)
+    df_cop = df_cop.drop(df_cop.columns[0], axis=1)
+    return df_cop
