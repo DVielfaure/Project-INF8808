@@ -8,8 +8,6 @@ from attr import dataclass
 import plotly.graph_objects as go
 import plotly.express as px
 
-import hover_template as hover
-
 
 
 def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
