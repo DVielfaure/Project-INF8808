@@ -11,6 +11,7 @@
 '''
 
 import json
+from tarfile import FIFOTYPE
 from zipfile import ZIP_MAX_COMMENT
 import dash
 import dash_html_components as html
@@ -21,11 +22,13 @@ from dash.exceptions import PreventUpdate
 
 import plotly.graph_objects as go
 
-import preprocess as preproc
+import preprocess 
 import map_viz
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.express as px
+
+import sankey
 
 app = dash.Dash(__name__)
 app.title = 'Projet Xperts Solutions'
@@ -34,19 +37,20 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-data = preproc.create_dataframe_from_csv()
+data = preprocess.create_dataframe_from_csv()
 
 #données preprocess
-map_data_departure = preproc.get_map_data(data,"Departure")
-map_data_arrival = preproc.get_map_data(data,"Arrival")
+map_data_departure = preprocess.get_map_data(data,"Departure")
+map_data_arrival = preprocess.get_map_data(data,"Arrival")
 
-barchart_data = preproc.get_barchart_data(data,"Departure")
+barchart_data = preprocess.get_barchart_data(data,"Departure")
+
 
 # #Get dataframes for Sankey diagram
-# dataframe1, dataframe2 = preprocess.get_sankey_data(dataframe, port_central)
+sankey_data = preprocess.get_sankey_data(data, port_central)
 
 # #Call function to trace sankey
-# trace_sankey(dataframe1, dataframe2, port_central)
+fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
 
 #figures
 
@@ -68,7 +72,7 @@ app.layout = html.Div([
         #div titre
         html.Div([
             html.H3('Trafic maritime par Xperts Solutions Technologies')
-        ],style={'margin-left': 50}, className='titlerow'),
+        ],style={'margin-left': 50, "justify-content": "center"}, className='titlerow' ),
 
         #div row 1
         html.Div([
@@ -135,16 +139,28 @@ app.layout = html.Div([
 
         html.Div([
             html.H2("Tous les ports",id='selection', style={'margin-top': 0, "margin-left":0}),
-            html.H4(id='updatemode-output-container', style={'margin-top': 20}),
+            html.H4(id='slider_limit_text', style={'margin-top': 20}),
             html.H4(id='update_relayoutData', style={'margin-top': 20}),
-            html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})            
-        ], style={"margin-left":100, 'float': "left"}),
+            html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
+                   
+        ], style={"margin-left":100, "width":500,'float': "left"}),
+
+    
         
-        html.H4(id='coord', style={'margin-top': 20})
-         
+        html.H4(id='coord', style={'margin-top': 20}),
+
+        html.Div([
+            dcc.Graph(id="sankey",figure=fig_sankey) 
+        ], style={'float': "left","width":1000}) ,
+
+
+        dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
+        html.Div([
+            html.H4(children="Test store",id='test_store')], style={'float': 'left'}
+        )
     ])
 
-#html.H4(id='updatemode-output-container', style={'margin-top': 20}-),
+#html.H4(id='slider_limit_text', style={'margin-top': 20}-),
 #hidden div , style={‘display’:‘none’}
 
 #https://www.somesolvedproblems.com/2021/08/how-to-add-vertical-scrollbar-to-plotly.html
@@ -156,8 +172,30 @@ app.css.append_css({
 })
 '''
 
+@app.callback(Output('test_score','children'),
+                [Input('store_prev_zoom','data')])
+def test(store_data):
+    print("store",dastore_datata)
+    return store_data
+
 
 #conserver la valeur du précédent zoom dans prev_zoom_h4
+@app.callback([Output('prev_zoom_h4','children'),
+                Output('store_prev_zoom', 'data')],
+              [Input('map_departure', 'relayoutData')]
+              )
+def update_zoom(relayoutData):
+    print("update_zoom",relayoutData)
+    if relayoutData != None and relayoutData != {'autosize': True}:
+        if 'geo.projection.scale' in relayoutData.keys():
+            return(relayoutData['geo.projection.scale'], relayoutData['geo.projection.scale'])
+        else:
+            raise PreventUpdate
+    else:
+        return zoom_init['geo.projection.scale'], zoom_init['geo.projection.scale']
+    ""
+
+"""#conserver la valeur du précédent zoom dans prev_zoom_h4
 @app.callback(Output('prev_zoom_h4','children'),
               [Input('map_departure', 'relayoutData')]
               )
@@ -170,8 +208,7 @@ def update_zoom(relayoutData):
             raise PreventUpdate
     else:
         return zoom_init['geo.projection.scale']
-    ""
-
+    """""
 
 
 zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, 'geo.center.lon': -85.70231819775765, 'geo.center.lat': 44.96680548384988,'geo.projection.scale':24.25146506416641} , 
@@ -188,7 +225,7 @@ zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, '
        
 
 
-@app.callback([Output('updatemode-output-container', 'children'),
+@app.callback([Output('slider_limit_text', 'children'),
                 Output('map_departure','figure')],
               [Input('slider-updatemode', 'value'),
               Input('region_dropdown','value'),
@@ -304,6 +341,7 @@ def affichage_selection(harbour_value, region_value):
         return "Harbours of "+ region_value
 
     if harbour_value != None:
+        port_central = harbour_value
         return "Harbour of "+ harbour_value.casefold().title()
     
     if harbour_value == None and region_value == None:  
@@ -371,4 +409,16 @@ def selection(harbour_value,region_value):
         options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()]
         return "Harbours of Canada", options, None
 """
+
+@app.callback(Output('sankey','figure'),
+                [Input('harbour_dropdown','value')],
+                [State('sankey','figure')])
+def update_sankey(harbour_value,fig):
+
+    if harbour_value == None:
+        return fig
+    if harbour_value != None:
+        sankey_data = preprocess.get_sankey_data(data,harbour_value)
+        fig = sankey.trace_sankey(sankey_data[0],sankey_data[1],harbour_value)
+        return fig
 
