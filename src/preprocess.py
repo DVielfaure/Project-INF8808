@@ -160,15 +160,16 @@ def get_sankey_data(dataframe, port_central):
     '''
     
     #Drop unnecessary columns
-    dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
+    df_sankey = dataframe.copy()
+    df_sankey = df_sankey.drop(['Id', 'Departure Date', 'Lenght', 'Width',
                     'Departure Latitude', 'Departure Longitude',
                     'Arrival Longitude', 'Arrival Latitude',
                     'Vessel Type', 'DeadWeight Tonnage',
-                    'Maximum Draugth', 'Arrival Date'], 1, inplace=True)
+                    'Maximum Draugth', 'Arrival Date'], axis=1)
     
     #Filter with the right central harbour
-    df_departure = dataframe.loc[dataframe['Arrival Hardour'] == port_central]
-    df_arrival = dataframe.loc[dataframe['Departure Hardour'] == port_central]
+    df_departure = df_sankey.loc[dataframe['Arrival Hardour'] == port_central]
+    df_arrival = df_sankey.loc[dataframe['Departure Hardour'] == port_central]
 
     #Count number of occurences
     df_departure = df_departure['Departure Hardour'].value_counts()
