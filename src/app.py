@@ -14,8 +14,8 @@ import json
 from tarfile import FIFOTYPE
 from zipfile import ZIP_MAX_COMMENT
 import dash
-import dash_html_components as html
-import dash_core_components as dcc
+from dash import html
+from dash import dcc
 from dash.dependencies import Input, Output, State
 from matplotlib.pyplot import bar, figure
 from dash.exceptions import PreventUpdate
@@ -154,12 +154,14 @@ app.layout = html.Div([
         html.H4(id='coord', style={'margin-top': 20}),
 
         html.Div([
-            dcc.Graph(id="sankey",figure=fig_sankey) 
-        ], style={'float': "left","width":1000}) ,
+            html.Div([
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
+            ], style={'float': "left","width":1000}),
 
-        html.Div([
-            dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-        ], style={'float': "left","width":1000}) ,
+            html.Div([
+                        dcc.Graph(id="sankey",figure=fig_sankey) 
+                    ], style={'float': "left","width":1000})  
+        ]),
 
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
         html.Div([
@@ -429,3 +431,14 @@ def update_sankey(harbour_value,fig):
         fig = sankey.trace_sankey(sankey_data[0],sankey_data[1],harbour_value)
         return fig
 
+@app.callback(Output('bar_chart_traffic','figure'),
+                [Input('harbour_dropdown','value')],
+                [State('bar_chart_traffic','figure')])
+def update_sankey(harbour_value,fig):
+
+    if harbour_value == None:
+        return fig
+    if harbour_value != None:
+        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=harbour_value)
+        fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data)
+        return fig_bar_traffic
