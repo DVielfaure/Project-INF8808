@@ -89,7 +89,12 @@ html.Div([
         , className='titlerow' ),
 
         html.Div([
-            html.H2("Tous les ports",id='selection', style={'margin-top': 0, "margin-left":0}),
+            html.H2("Tous les ports",id='selection', 
+            style={
+                'margin-top': 0, 
+                "margin-left":0,
+                "font-family": 'verdana',
+                'textAlign': 'center'}),
             html.H4(id='slider_limit_text', style={'margin-top': 20}),
             html.H4(id='update_relayoutData', style={'margin-top': 20}),
             #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
