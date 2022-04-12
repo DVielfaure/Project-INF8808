@@ -1,10 +1,10 @@
 '''
     Contains the server to run our application.
 '''
-from flask_failsafe import failsafe
+#from flask_failsafe import failsafe
 
 
-@failsafe
+#@failsafe
 def create_app():
     '''
         Gets the underlying Flask server from our Dash app.
