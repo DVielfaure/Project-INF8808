@@ -12,12 +12,12 @@ df = pd.read_csv("data/TRIP.csv")
 
 dff=preprocess.traffic_per_time(df, scale="day")
 dff = dff.groupby('Departure Day')['Traffic'].sum().reset_index()
-print(dff['Departure Day'].value_counts())
+# print(dff['Departure Day'].value_counts())
 dff["Departure Year"] = pd.to_datetime(dff["Departure Day"]).dt.year.astype('str')
 years = dff['Departure Year'].drop_duplicates().sort_values().tolist()
-print(dff[dff['Departure Year'] == '2017'].head())
+# print(dff[dff['Departure Year'] == '2017'].head())
 
-print(years)
+# print(years)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div([

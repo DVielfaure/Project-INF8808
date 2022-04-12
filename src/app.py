@@ -50,6 +50,14 @@ map_data_arrival = preprocess.get_map_data(data,"Arrival")
 
 barchart_data = preprocess.get_barchart_data(data,"Departure")
 
+
+#preprocess lineshart
+dff=preprocess.traffic_per_time(data, scale="day")
+dff = dff.groupby('Date')['Traffic'].sum().reset_index()
+dff["Departure Year"] = pd.to_datetime(dff["Date"]).dt.year.astype('str')
+years = dff['Departure Year'].drop_duplicates().sort_values().tolist()
+
+
 # #Get dataframes for Sankey diagram
 sankey_data = preprocess.get_sankey_data(data, port_central)
 
@@ -173,6 +181,30 @@ html.Div([
             ], style={'flex':3})
         ], id='second_row', style={'display':'flex'}),
 
+
+        html.Div([
+            html.Div([
+                        dcc.Dropdown(options=[{'value':year, 'label':year} for year in years], 
+                                        # value=years[0], 
+                                        id='year-dropdown',
+                                        optionHeight=35,                    #height/space between dropdown options
+                                        disabled=False,                     #disable dropdown value selection
+                                        multi=False,                        #allow multiple dropdown values to be selected
+                                        searchable=True,                    #allow user-searching of dropdown values
+                                        search_value='',                    #remembers the value searched in dropdown
+                                        placeholder='Selectionnez une année',     #gray, default text shown when no option is selected
+                                        clearable=True,                     #allow user to removes the selected value
+                                        style={'width':"60%",
+                                        "align":"center"},             #use dictionary to define CSS styles of your dropdown
+                            ),
+                        dcc.Graph(id='linechart')
+                    ], style={'flex':2}),
+
+            html.Div([
+                dcc.Graph(id="bar_chart_traffic_2", figure=fig_bar_traffic) 
+            ], style={'flex':3})
+        ], id='third_row', style={'display':'flex'}),
+
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
        
 ], id='global', style={'display':'flex', 'align_items':'center', 'flex-direction':'column', 'width':'100%'})
@@ -188,6 +220,7 @@ app.css.append_css({
     'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 })
 '''
+##### CAKLBACKS #####
 
 
 #conserver la valeur du précédent zoom dans prev_zoom_h4
@@ -217,7 +250,6 @@ zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, '
        }
 
        
-
 
 @app.callback([Output('slider_limit_text', 'children'),
                 Output('map_departure','figure')],
@@ -427,3 +459,49 @@ def update_bar_chart_traffic(harbour_value,fig):
         bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=harbour_value)
         fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, harbour_value)
         return fig_bar_traffic
+
+#Callback lineshart
+
+@app.callback(
+    Output('linechart', 'figure'),
+    [Input('year-dropdown', 'value'),
+    Input('harbour_dropdown','value')]
+)
+def update_output(year,harbour_value):
+
+    print('year', year)
+    dff1 = dff[dff['Departure Year'] == year].sort_values('Date')
+    
+    if harbour_value == None:
+        
+
+        fig = px.line(dff1,
+            x='Date',
+            y='Traffic',
+            title=f"Evolution du trafic par mois")
+                                #hover_data={'BUSINESS_NAME': True, 'LATITUDE': False, 'LONGITUDE': False,
+                                            #'APP_SQ_FT': True})
+
+    else:
+        dff2 = preprocess.traffic_per_time(data, scale="day")
+        dff2 = dff2[dff2["Departure Hardour"]== harbour_value]
+        dff2 = dff2.groupby(['Date'])['Traffic'].sum().reset_index()
+        
+        print(dff2.columns)
+
+        dff2["Departure Year"] = pd.to_datetime(dff2["Date"]).dt.year.astype('str')
+        dff2 = dff2[dff2['Departure Year'] == year].sort_values('Date')
+    
+
+
+        fig = px.line(dff2,
+            x='Date',
+            y='Traffic',
+            title=f"Evolution du trafic par mois",
+                                #hover_data={'BUSINESS_NAME': True, 'LATITUDE': False, 'LONGITUDE': False,
+                                            #'APP_SQ_FT': True}) 
+            )
+
+    
+    fig.update_layout(title_x=0.5, font_size=15)
+    return fig
