@@ -1,14 +1,6 @@
 
 # -*- coding: utf-8 -*-
 
-'''
-    File name: app.py
-    Author: Olivia Gélinas
-    Course: INF8808
-    Python Version: 3.8
-
-    This file contains the source code for TP5.
-'''
 
 import json
 from tarfile import FIFOTYPE
@@ -178,7 +170,8 @@ html.Div([
 
             html.Div([
                 dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-            ], style={'flex':3})
+            ], style={'flex':3}),
+            
         ], id='second_row', style={'display':'flex'}),
 
 
@@ -497,7 +490,7 @@ def update_output(year,harbour_value):
         fig = px.line(dff2,
             x='Date',
             y='Traffic',
-            title=f"Evolution du trafic par mois",
+            title=f"Evolution du trafic journalier",
                                 #hover_data={'BUSINESS_NAME': True, 'LATITUDE': False, 'LONGITUDE': False,
                                             #'APP_SQ_FT': True}) 
             )
