@@ -81,7 +81,7 @@ html.Div([
         #div titre
         html.Div([
             html.H3('Trafic maritime par Xperts Solutions Technologies')
-        ]
+        ], style={"justify-content": "center"}
         #,style={'margin-left': 50, "justify-content": "center"}
         , className='titlerow' ),
 
@@ -92,7 +92,6 @@ html.Div([
             #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
                    
         ]),
-        #, style={"margin-left":100, "width":500,'float': "left"}),
 
         #div row 1
         html.Div([
@@ -110,7 +109,6 @@ html.Div([
                     updatemode='drag'
                 )
             ]),
-            #,style={"width":500, 'float': "left"}),
 
             #div dropdown et barchart
             html.Div([
@@ -126,8 +124,7 @@ html.Div([
                             placeholder="Region"
                             
                         )
-                    ]),
-                    #,style={"width":200, 'heigth':60, 'margin-left':20, 'float': "left"} ),
+                    ], style={'flex':3, 'margin-right':'1em'}),
 
                     #dropdown Harbour
                     html.Div([ 
@@ -138,10 +135,8 @@ html.Div([
                             ],
                             placeholder="Harbour"
                         )
-                    ])
-                    #,style={"width":250, 'heigth':60, 'margin-left':20, 'float': "left"} )
-                ]
-                #,style={'heigth':60, "width":500}
+                    ], style={'flex':3})
+                ], style={'display':'flex', 'justify-content':'space-between'}
                 ),
 
                 #ligne barchart
@@ -154,9 +149,7 @@ html.Div([
                             ,style={"width":500,'max-height':200, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
                     ),
                 ])
-                #,style={'float': "left", 'margin-top': 0})
             ])
-            #,style={"height":250, 'float': "left"}),
 
         ], id='first_row', style={'display':'flex', 'width':'100%'}),
         
@@ -164,19 +157,17 @@ html.Div([
 
         html.Div([
             html.Div([
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-            ]),
-            #, style={'float':'left', "width":1000}),
+                        dcc.Graph(id="sankey",figure=fig_sankey) 
+                    ], style={'flex':2}),
 
             html.Div([
-                        dcc.Graph(id="sankey",figure=fig_sankey) 
-                    ])
-                    #style={'float':'left', "width":1000})  
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
+            ], style={'flex':3})
         ], id='second_row', style={'display':'flex'}),
 
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
        
-], id='global', style={'display':'flex', 'align_items':'stretch', 'flex-direction':'column'})
+], id='global', style={'display':'flex', 'align_items':'center', 'flex-direction':'column', 'width':'100%'})
 
 #html.H4(id='slider_limit_text', style={'margin-top': 20}-),
 #hidden div , style={‘display’:‘none’}
