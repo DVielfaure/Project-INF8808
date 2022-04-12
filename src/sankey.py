@@ -61,4 +61,4 @@ def trace_sankey(df_departure, df_arrival, port_central):
   fig.update_layout(title_text="Flux entrants et flux sortants du port de " + port_central, font_size=15)
 
   #Show figure for development
-  fig.show()
+  return fig
