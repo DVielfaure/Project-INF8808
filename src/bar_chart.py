@@ -9,8 +9,6 @@ import preprocess
 
 def trace_bar_chart(df):
 
-    df_counts = df.groupby(['Date', 'Vessel Type']).agg('count').reset_index()
-
-    fig = px.bar(df_counts, x="Date", y="Traffic", color="Vessel Type", title="Evolution du traffic du port")
+    fig = px.bar(df, x="Date", y="Traffic", color="Vessel Type", title="Evolution du traffic du port")
     
     return fig

@@ -72,7 +72,8 @@ def transform_value(value):
 # Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
 # tooltip={"placement": "bottom", "always_visible": True})
 
-app.layout = html.Div([
+app.layout = \
+html.Div([
         #div titre
         html.Div([
             html.H3('Trafic maritime par Xperts Solutions Technologies')
@@ -92,10 +93,7 @@ app.layout = html.Div([
                     marks={i: '{}'.format(10 ** i) for i in range(5)},
                     value=2,
                     updatemode='drag'
-                ),
-                
-    
-                
+                )
             ],style={"width":500, 'float': "left"}),
 
             #div dropdown et barchart
@@ -434,7 +432,7 @@ def update_sankey(harbour_value,fig):
 @app.callback(Output('bar_chart_traffic','figure'),
                 [Input('harbour_dropdown','value')],
                 [State('bar_chart_traffic','figure')])
-def update_sankey(harbour_value,fig):
+def update_bar_chart_traffic(harbour_value,fig):
 
     if harbour_value == None:
         return fig
