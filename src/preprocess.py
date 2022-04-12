@@ -60,6 +60,28 @@ def filter_df(df,scale,place):
         
     return df
 
+
+def merge_topn(df):
+    
+    #Create list of larger ship categories
+    df_traffic_topn = df.groupby(['Vessel Type']).sum()
+    df_traffic_topn =df_traffic_topn.nlargest(10,"Traffic").reset_index()
+    topn = df_traffic_topn["Vessel Type"].unique()
+
+    
+    #Separating df in top and bottom categories
+    df_traffic_top = df[df['Vessel Type'].isin(topn)]
+    df_traffic_bottom = df[~df['Vessel Type'].isin(topn)]
+
+    #Merging bottom
+    df_traffic_bottom = df_traffic_bottom.groupby(['Date', "Departure Hardour"]).sum().reset_index()
+    df_traffic_bottom["Vessel Type"] = "OTHERS"
+
+    #Merging top and bottom
+    df_traffic_total = pd.concat([df_traffic_top,df_traffic_bottom]).reset_index()
+
+    return df_traffic_total
+
 def traffic_per_time(df, scale="year"):
     '''
         Converts the date to datetime format.
@@ -81,6 +103,8 @@ def traffic_per_time(df, scale="year"):
         df["Date"] = (df['Departure Date']).dt.date
 
         df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+
+    df_traffic = merge_topn(df_traffic)
         
     return df_traffic
 
