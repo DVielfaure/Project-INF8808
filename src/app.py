@@ -9,8 +9,6 @@ import dash
 
 import dash_html_components as html
 import dash_core_components as dcc
-#import dash_html_components as html
-#import dash_core_components as dcc
 
 from dash.dependencies import Input, Output, State
 from matplotlib.pyplot import bar, figure
@@ -78,10 +76,6 @@ def transform_value(value):
 
 # Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
 # tooltip={"placement": "bottom", "always_visible": True})
-
-app.layout2 = html.Div([
-    dcc.Graph(id="boxplot", figure=fig_boxplot)
-])
 
 app.layout = \
 html.Div([
@@ -233,7 +227,6 @@ app.css.append_css({
     Input('region_dropdown', 'value')]
 )
 def update_boxplot(harbour, region):
-    print('data head : ', data.head())
     return boxplot.update_traces_boxplot(data, fig_boxplot, region, harbour)
 
 
@@ -242,7 +235,7 @@ def update_boxplot(harbour, region):
               [Input('map_departure', 'relayoutData')]
               )
 def update_zoom(relayoutData):
-    # print("update_zoom",relayoutData)
+    print("update_zoom",relayoutData)
     if relayoutData != None and relayoutData != {'autosize': True}:
         if 'geo.projection.scale' in relayoutData.keys():
             return(relayoutData['geo.projection.scale'])
@@ -280,7 +273,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
 
     #si le slider est utilisé
     if input_id == "slider-updatemode":
-        # print("update map",relayoutData)
+        print("update map",relayoutData)
         #évite que le zoom inital ne se perde au chargement
             #si pas de région de sélectionnée, on update la map avec les ports au dessus de la limite et le même zoom
         if relayoutData != None and region_dropdown == None:
@@ -294,7 +287,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
     
     #si une region est sélectionnée
     if input_id == "region_dropdown":
-        # print("region_dropdown")
+        print("region_dropdown")
         if region_dropdown != None:
             zoom = zooms[region_dropdown]
             figure = go.Figure(figure)
@@ -313,7 +306,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
     #si un port est sélectionné
     ##centre la carte sur le port sélectionné + TODO mise en couleur/augmentation taille
     if input_id == "harbour_dropdown":
-        # print("update zoom port")
+        print("update zoom port")
         harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
 
         figure = map_viz.get_map(map_data_departure,"Departure",min(harbour_data["Trafic"].values[0],int(10**slider_value)),None,None)
@@ -483,7 +476,7 @@ def update_bar_chart_traffic(harbour_value,fig):
 )
 def update_output(year,harbour_value):
 
-    # print('year', year)
+    print('year', year)
     dff1 = dff[dff['Departure Year'] == year].sort_values('Date')
     
     if harbour_value == None:
@@ -501,7 +494,7 @@ def update_output(year,harbour_value):
         dff2 = dff2[dff2["Departure Hardour"]== harbour_value]
         dff2 = dff2.groupby(['Date'])['Traffic'].sum().reset_index()
         
-        # print(dff2.columns)
+        print(dff2.columns)
 
         dff2["Departure Year"] = pd.to_datetime(dff2["Date"]).dt.year.astype('str')
         dff2 = dff2[dff2['Departure Year'] == year].sort_values('Date')
