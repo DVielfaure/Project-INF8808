@@ -107,20 +107,6 @@ html.Div([
         #div row 1
         html.Div([
             
-            #div map et slider
-            html.Div([
-                dcc.Graph(figure=fig_departure, id='map_departure'),
-                dcc.Slider(
-                    min=0, 
-                    max=4, 
-                    step=0.01,
-                    id='slider_updatemode',
-                    marks={i: '{}'.format(10 ** i) for i in range(5)},
-                    value=2,
-                    updatemode='drag'
-                )
-            ]),
-
             #div dropdown et barchart
             html.Div([
                 #ligne dropdown
@@ -157,25 +143,39 @@ html.Div([
                         #gérer la taille du bar chart en fonction du nombre de ligne de la figure (mais il faut sélectionner la bonne)
                         dcc.Graph(id="barchart",figure= fig_bar, style={'height':max(4*(len(fig_bar.data[0]['y'])-14),100)}
                             )]
-                            ,style={"width":500,'max-height':200, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
+                            ,style={'max-height':150, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
                     ),
                 ])
+            ], style = {'margin-bottom':25}),
+
+            #div map et slider
+            html.Div([
+                dcc.Graph(figure=fig_departure, id='map_departure'),
+                dcc.Slider(
+                    min=0, 
+                    max=4, 
+                    step=0.01,
+                    id='slider_updatemode',
+                    marks={i: '{}'.format(10 ** i) for i in range(5)},
+                    value=2,
+                    updatemode='drag'
+                )
             ])
 
-        ], id='first_row', style={'display':'flex', 'width':'100%'}),
+        ], id='first_row', style={'display':'flex', 'width':'30%','flex-direction':'column'}),
         
         #html.H4(id='coord', style={'margin-top': 20}),
 
         html.Div([
             html.Div([
                         dcc.Graph(id="sankey",figure=fig_sankey) 
-                    ], style={'flex':2}),
+                    ], style={'flex':1}),
 
             html.Div([
                 dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-            ], style={'flex':3}),
+            ], style={'flex':1}),
             
-        ], id='second_row', style={'display':'flex'}),
+        ], id='second_row', style={'display':'flex', 'width':'100%'}),
 
 
         html.Div([
@@ -194,12 +194,12 @@ html.Div([
                                         "align":"center"},             #use dictionary to define CSS styles of your dropdown
                             ),
                         dcc.Graph(id='linechart')
-                    ], style={'flex':2}),
+                    ], style={'flex':1}),
 
             html.Div([
                 dcc.Graph(id="boxplot", figure=fig_boxplot)
-            ], style={'flex':3})
-        ], id='third_row', style={'display':'flex'}),
+            ], style={'flex':2})
+        ], id='third_row', style={'display':'flex', "width":'100%'}),
 
 
     
@@ -306,7 +306,7 @@ def update_viz(selection_data):
         return fig__boxplot, dash.no_update, dash.no_update
 
 
-
+### callback pour la map
 
 #conserver la valeur du précédent zoom dans prev_zoom_h4
 @app.callback(Output('store_prev_zoom', 'data'),

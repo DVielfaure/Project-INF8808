@@ -90,7 +90,7 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
 
     fig.update_traces(marker=dict(size=9))
 
-    fig.update_layout(width=500,#height=400,
+    fig.update_layout(width=400,#height=400,
                     margin={"r": 0, "t": 0, "l": 0, "b": 0, "pad":4 , "autoexpand":True},
                     autosize=False,
                     mapbox_center=go.layout.mapbox.Center(
@@ -127,7 +127,7 @@ def get_barchart(data,type,lim=0):
 
     fig.update_layout(
         bargap=0.5,
-        width=400,#height=400,
+        width=300,#height=400,
         margin={"r": 0, "t": 20, "l": 200, "b": 0, "pad":4 , "autoexpand":True},
 
         xaxis_anchor="free",
