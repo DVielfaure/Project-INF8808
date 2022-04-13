@@ -1,0 +1,57 @@
+.titre {
+    text-align: center;
+    font-family: Verdana;
+}
+
+.d-flex {
+    display: flex;
+    gap: 10px 10px;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.d-grid {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns:auto auto;
+    gap: 10px;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.content-stretch {
+    align-content: stretch;
+}
+
+.w-100 {
+    width: 100%
+}
+
+.w-40 {
+    width: 40%
+}
+
+.grow-1 {
+    flex-grow: 1;
+}
+
+.grow-2 {
+    flex-grow: 2;
+}
+
+.h-100vh {
+    height: 100vh;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+.trafic-port {
+    max-height: 300px;
+    overflow-y: scroll;
+}

@@ -3,6 +3,7 @@
 
 
 import json
+from pydoc import classname
 from tarfile import FIFOTYPE
 from zipfile import ZIP_MAX_COMMENT
 import dash
@@ -81,15 +82,91 @@ def transform_value(value):
 
 app.layout = \
 html.Div([
-        #div titre
-        html.Div([
-            html.H1('Trafic maritime par Xperts Solutions Technologies',
-                style={
-                    'textAlign': 'center', 
-                    "font-family": 'verdana'})
-        ], style={"style=text-align":"center", "align":"center", "justify":"center"}
-        #,style={'margin-left': 50, "justify-content": "center"}
-        , className='titlerow' ),
+    html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre"),
+    html.H2("Tous les ports",id='selection', className="titre"),
+    html.H4(id='slider_limit_text'),
+    html.H4(id='update_relayoutData'),
+
+    html.Div([ # container
+        html.Div([ # left side
+
+            html.Div([ # dropdown row
+                html.Div([dcc.Dropdown(
+                    id="region_dropdown",
+                    options=[{'label':x, 'value': x} for x in barchart_data["Departure Region"].unique()],
+                    placeholder="Region",
+                )], className="grow-1"),
+                
+                html.Div([dcc.Dropdown(
+                    id="harbour_dropdown",
+                    options=[{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()],
+                    placeholder="Harbour",
+                )], className="grow-1"),
+                
+            ], className="d-flex"),
+
+            html.Div([dcc.Graph(
+                id="barchart",
+                figure= fig_bar, 
+                style={'height':max(4*(len(fig_bar.data[0]['y']) - 14), 100)},
+            )], className="trafic-port"),
+
+            dcc.Graph(
+                figure=fig_departure,
+                id='map_departure',
+                style={'height': '100%'}
+            ),
+
+            dcc.Slider(
+                min=0, 
+                max=4, 
+                step=0.01,
+                id='slider_updatemode',
+                marks={i: '{}'.format(10 ** i) for i in range(5)},
+                value=2,
+                updatemode='drag'
+            ),
+
+        ], className="w-40"),
+        
+        html.Div([ # rigth side grid 2x2
+
+            html.Div([
+                dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1"),
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1"),
+            ], className="d-flex"),
+
+            html.Div([
+                html.Div([
+                    dcc.Dropdown(
+                        options=[{'value':year, 'label':year} for year in years], 
+                        # value=years[0], 
+                        id='year-dropdown',
+                        optionHeight=35,                    #height/space between dropdown options
+                        disabled=False,                     #disable dropdown value selection
+                        multi=False,                        #allow multiple dropdown values to be selected
+                        searchable=True,                    #allow user-searching of dropdown values
+                        search_value='',                    #remembers the value searched in dropdown
+                        placeholder='Selectionnez une année',     #gray, default text shown when no option is selected
+                        clearable=True,                     #allow user to removes the selected value
+                        style={'width':"60%", "align":"center"},             #use dictionary to define CSS styles of your dropdown
+                    ),
+                    
+                    dcc.Graph(id='linechart'),
+                ], className="grow-1"),
+                dcc.Graph(id="boxplot", figure=fig_boxplot, className="grow-1"),
+
+            ], className="d-flex"),
+
+        ], className="d-flex flex-column w-100"),
+
+    ], className="d-flex space-between h-100vh")
+])
+
+
+app.layout2 = \
+html.Div([
+    html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre"),
 
         html.Div([
             html.H2("Tous les ports",id='selection', 
