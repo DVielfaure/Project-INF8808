@@ -36,7 +36,7 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-data = preprocess.create_dataframe_from_csv()
+data = preprocess.create_dataframe_from_csv().head(5000)
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")
@@ -111,11 +111,10 @@ html.Div([
                 style={'height':max(4*(len(fig_bar.data[0]['y']) - 14), 100)},
             )], className="trafic-port"),
 
-            dcc.Graph(
+            html.Div([dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
-                style={'height': '100%'}
-            ),
+            )], className="h-100"),
 
             dcc.Slider(
                 min=0, 
@@ -127,14 +126,14 @@ html.Div([
                 updatemode='drag'
             ),
 
-        ], className="w-40"),
+        ], className="w-40 d-flex flex-column"),
         
-        html.Div([ # rigth side grid 2x2
+        html.Div([ # rigth side
 
             html.Div([
-                dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1"),
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1"),
-            ], className="d-flex"),
+                dcc.Graph(id="sankey",figure=fig_sankey),
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic),
+            ], className="d-flex h-100"),
 
             html.Div([
                 html.Div([
@@ -149,19 +148,19 @@ html.Div([
                         search_value='',                    #remembers the value searched in dropdown
                         placeholder='Selectionnez une année',     #gray, default text shown when no option is selected
                         clearable=True,                     #allow user to removes the selected value
-                        style={'width':"60%", "align":"center"},             #use dictionary to define CSS styles of your dropdown
+                        # style={'width':"60%", "align":"center"},             #use dictionary to define CSS styles of your dropdown
                     ),
                     
                     dcc.Graph(id='linechart'),
-                ], className="grow-1"),
-                dcc.Graph(id="boxplot", figure=fig_boxplot, className="grow-1"),
+                ], className="w-100"),
+                dcc.Graph(id="boxplot", figure=fig_boxplot, className="w-100"),
 
-            ], className="d-flex"),
+            ], className="d-flex h-100"),
 
-        ], className="d-flex flex-column w-100"),
+        ], className="d-flex flex-column"),
 
-    ], className="d-flex space-between h-100vh")
-])
+    ], className="d-flex space-between grow-1")
+], className="h-100 d-flex flex-column")
 
 
 app.layout2 = \

@@ -1,3 +1,12 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body, #react-entry-point {
+    height: 100%;
+}
+
 .titre {
     text-align: center;
     font-family: Verdana;
