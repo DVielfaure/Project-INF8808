@@ -1,6 +1,7 @@
 '''
     Contains the server to run our application.
 '''
+import os
 from flask_failsafe import failsafe
 
 
@@ -18,4 +19,4 @@ def create_app():
 
 
 if __name__ == "__main__":
-    create_app().run(port="8050", debug=True)
+    create_app().run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)), debug=False)
