@@ -11,7 +11,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from dash.dependencies import Input, Output, State
-from matplotlib.pyplot import bar, figure
+#from matplotlib.pyplot import bar, figure
 from dash.exceptions import PreventUpdate
 
 import plotly.graph_objects as go
@@ -195,15 +195,12 @@ html.Div([
                     ], style={'flex':2}),
 
             html.Div([
-                dcc.Graph(id="bar_chart_traffic_2", figure=fig_bar_traffic) 
+                dcc.Graph(id="boxplot", figure=fig_boxplot)
             ], style={'flex':3})
         ], id='third_row', style={'display':'flex'}),
 
 
-        html.Div([
-            dcc.Graph(id="boxplot", figure=fig_boxplot)
-        ]),
-
+    
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
        
 ], id='global', style={'display':'flex', 'align_items':'center', 'flex-direction':'column', 'width':'100%'})
