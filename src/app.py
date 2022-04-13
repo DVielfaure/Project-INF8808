@@ -26,6 +26,8 @@ import sankey
 import bar_chart
 import boxplot
 
+
+
 app = dash.Dash(__name__)
 app.title = 'Projet Xperts Solutions'
 
@@ -112,7 +114,7 @@ html.Div([
                     min=0, 
                     max=4, 
                     step=0.01,
-                    id='slider-updatemode',
+                    id='slider_updatemode',
                     marks={i: '{}'.format(10 ** i) for i in range(5)},
                     value=2,
                     updatemode='drag'
@@ -202,6 +204,8 @@ html.Div([
 
     
         dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
+        dcc.Store(id="selection_data",data = {"type":"All","value":"All","slider":100}, storage_type='memory')
+
        
 ], id='global', style={'display':'flex', 'align_items':'center', 'flex-direction':'column', 'width':'100%'})
 
@@ -216,15 +220,92 @@ app.css.append_css({
     'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'
 })
 '''
-##### CAKLBACKS #####
+##### CALLBACKS #####
 
-@app.callback(
-    Output('boxplot', 'figure'),
-    [Input('harbour_dropdown', 'value'),
-    Input('region_dropdown', 'value')]
-)
-def update_boxplot(harbour, region):
-    return boxplot.update_traces_boxplot(data, fig_boxplot, region, harbour)
+
+#update selection et data
+@app.callback(Output('selection_data','data'),
+             [Input('slider_updatemode', 'value'),
+              Input('region_dropdown','value'),
+              Input('harbour_dropdown','value')],
+              [State('selection_data','data')])
+def update_selection(slider_value, region_value, harbour_value,selection):
+
+        ctx = dash.callback_context
+        input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+        #si le slider est utilisé
+        if input_id == "slider_updatemode":
+            selection["slider"] = int(10**slider_value)
+
+        #si un port est sélectionné
+        if input_id == "harbour_dropdown":
+            selection["type"] = "Harbour"
+            selection["value"] = harbour_value
+            selection["slider"] = 100
+
+        #si region sélectionnée
+        if input_id == "region_dropdown":
+            selection["type"] = "Region"
+            selection["value"] = region_value
+
+        #si rien de sélectionné
+
+        if selection["value"] == None:
+            selection["type"] = "All"
+
+        print(selection)
+        return selection
+
+
+#affichage texte de la sélection (region, port ou all (Canada)) 
+@app.callback(Output('selection','children'),
+            [Input('selection_data','data')])
+def affichage_selection(selection_data):
+
+    if selection_data["type"] == "Region": 
+        return "Ports de la region:  "+ selection_data["value"]
+
+    if selection_data["type"] == "Harbour":
+        port_central = selection_data["value"]
+        return "Port "+  selection_data["value"].casefold().title()
+    
+    if selection_data["type"] == "All":
+        return "Tous les ports du Canada"
+
+
+#update viz lorsque selection change
+@app.callback([Output('boxplot', 'figure'),
+            Output('sankey','figure'),
+            Output('bar_chart_traffic','figure')],
+            [Input('selection_data','data')])
+def update_viz(selection_data):
+
+    if selection_data["type"] == "Region":
+        
+        fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
+
+        return fig__boxplot, dash.no_update, dash.no_update
+
+    if selection_data["type"] == "Harbour":
+        
+        fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, selection_data["value"])
+
+        sankey_data = preprocess.get_sankey_data(data,selection_data["value"])
+        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1],selection_data["value"])
+
+        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=selection_data["value"])
+        fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
+
+        return fig__boxplot, fig__sankey, fig__bar_traffic
+    
+    if selection_data["type"] == "All":
+
+        fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, None)
+
+        return fig__boxplot, dash.no_update, dash.no_update
+
+
 
 
 #conserver la valeur du précédent zoom dans prev_zoom_h4
@@ -257,7 +338,7 @@ zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, '
 
 @app.callback([Output('slider_limit_text', 'children'),
                 Output('map_departure','figure')],
-              [Input('slider-updatemode', 'value'),
+              [Input('slider_updatemode', 'value'),
               Input('region_dropdown','value'),
               Input('harbour_dropdown','value')],
               [State('map_departure', 'relayoutData'),
@@ -269,7 +350,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
     #si le slider est utilisé
-    if input_id == "slider-updatemode":
+    if input_id == "slider_updatemode":
         print("update map",relayoutData)
         #évite que le zoom inital ne se perde au chargement
             #si pas de région de sélectionnée, on update la map avec les ports au dessus de la limite et le même zoom
@@ -327,17 +408,17 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
 @app.callback([Output("barchart","figure"),
                 Output("barchart",'style')],
             [Input('region_dropdown','value'),
-            Input('slider-updatemode','value')
+            Input('slider_updatemode','value')
             #,Input('map_chart','relayoutData')
             ])
-def update_barchart(dropdown_value,slider_value):
+def update_barchart(region_dropdown,slider_value):
 
     #clear value du dropdown
 
     #s'il y a une région de sélectionnée
-    if dropdown_value != None:
+    if region_dropdown != None:
 
-        filtered_data = barchart_data[barchart_data["Departure Region"]==dropdown_value]
+        filtered_data = barchart_data[barchart_data["Departure Region"]==region_dropdown]
         fig = map_viz.get_barchart(filtered_data,"Departure",lim=int(10**slider_value))
 
         style={'height':max(25*(len(fig.data[0]['y'])),200)}
@@ -354,49 +435,6 @@ def update_barchart(dropdown_value,slider_value):
         return fig, style
 
 
-@app.callback(Output('coord','children'),
-            [Input('map_departure',"relayoutData")])
-def get_coord(relayoutData):
-    return "Coordonnées = " + str(relayoutData)
-
-
-
-#affichage texte de la sélection (region, port ou all (Canada))
-@app.callback(Output('selection','children'),
-            [Input('harbour_dropdown','value'),
-            Input('region_dropdown','value')])
-def affichage_selection(harbour_value, region_value):
-
-    if harbour_value == None and region_value != None:  
-        return "Ports de la region:  "+ region_value
-
-    if harbour_value != None:
-        port_central = harbour_value
-        return "Port "+ harbour_value.casefold().title()
-    
-    if harbour_value == None and region_value == None:  
-        return "Tous les ports du Canada"
-
-        """#affichage texte de la sélection (region, port ou all (Canada)) + update slider
-@app.callback([Output('selection','children'),
-            Output('slider-updatemode','value')],
-            [Input('harbour_dropdown','value'),
-            Input('region_dropdown','value')],
-            [State('slider-updatemode','value')])
-def affichage_selection(harbour_value, region_value,slider_value):
-    print("affichage_selection")
-
-    if harbour_value == None and region_value != None:  
-        return "Harbours of "+ region_value, slider_value
-
-    if harbour_value != None:
-        print("harbour detected")
-        new_slider_value = map_data_departure[map_data_departure["Departure Hardour"]==harbour_value]["Trafic"].values[0]
-        return "Harbour of "+ harbour_value.casefold().title(), new_slider_value
-    
-    if harbour_value == None and region_value == None:  
-        return "Harbours of Canada", slider_value"""
-
 #filtre les valeurs du dropdown des ports si une région est sélectionnée 
 @app.callback(Output('harbour_dropdown','options'),
                 [Input('region_dropdown', 'value')])
@@ -410,59 +448,7 @@ def update_dropdown_harbour(region_value):
     return options
 
 
-"""#affichage sélection et filtre les valeurs du dropdown des ports si une région est sélectionnée 
-@app.callback([Output('selection','children'),
-            Output('harbour_dropdown','options'),
-            Output('region_dropdown','value')],
-            [Input('harbour_dropdown','value'),
-            Input('region_dropdown','value')])
-def selection(harbour_value,region_value):
 
-    #region de sélectionnée mais pas de port
-    if harbour_value == None and region_value != None:  
-        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Hardour"].unique()]
-        return "Harbours of "+ region_value, options, region_value
-
-    #port de sélectionné 
-    if harbour_value != None:
-        #si pas de région déjà sélectionnée:
-        if region_value == None:
-            reg = barchart_data[barchart_data["Departure Hardour"]==harbour_value]["Departure Region"].unique()[0]
-            options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==reg]["Departure Hardour"].unique()]
-            return "Harbour of "+ harbour_value.casefold().title(), options, reg
-        ## si région déjà sélectionnée
-        else:
-            options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Hardour"].unique()]
-            return "Harbour of "+ harbour_value.casefold().title(), options, region_value
-      
-    if harbour_value == None and region_value == None:  
-        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()]
-        return "Harbours of Canada", options, None
-"""
-
-@app.callback(Output('sankey','figure'),
-                [Input('harbour_dropdown','value')],
-                [State('sankey','figure')])
-def update_sankey(harbour_value,fig):
-
-    if harbour_value == None:
-        return fig
-    if harbour_value != None:
-        sankey_data = preprocess.get_sankey_data(data,harbour_value)
-        fig = sankey.trace_sankey(sankey_data[0],sankey_data[1],harbour_value)
-        return fig
-
-@app.callback(Output('bar_chart_traffic','figure'),
-                [Input('harbour_dropdown','value')],
-                [State('bar_chart_traffic','figure')])
-def update_bar_chart_traffic(harbour_value,fig):
-
-    if harbour_value == None:
-        return fig
-    if harbour_value != None:
-        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=harbour_value)
-        fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, harbour_value)
-        return fig_bar_traffic
 
 #Callback lineshart
 
