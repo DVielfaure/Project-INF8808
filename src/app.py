@@ -36,7 +36,7 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-data = preprocess.create_dataframe_from_csv().head(5000)
+data = preprocess.create_dataframe_from_csv()
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")
@@ -80,16 +80,6 @@ def transform_value(value):
 # Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
 # tooltip={"placement": "bottom", "always_visible": True})
 
-dff = px.data.gapminder().query("year == 2007")
-figg = px.scatter_geo(dff, locations="iso_alpha", size="pop")
-
-
-app.layout3 = \
-html.Div([
-    dcc.Graph(
-        figure=fig_departure,
-    )
-])
 
 app.layout = \
 html.Div([
@@ -122,12 +112,10 @@ html.Div([
                 style={'height':max(4*(len(fig_bar.data[0]['y']) - 14), 100)},
             )], className="trafic-port"),
 
-            html.Div([dcc.Graph(
+            dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
-                # style={'height': '50%'}
-                style={'flex': 1}
-            )], className="grow-1 d-flex flex-column"),
+            ),
 
             dcc.Slider(
                 min=0, 
@@ -171,7 +159,11 @@ html.Div([
 
                 ], className="grow-1 d-flex flex-column"),
 
-                dcc.Graph(id="boxplot", figure=fig_boxplot, className="grow-1"),
+                html.Div([dcc.Graph(
+                    id="boxplot",
+                    figure=fig_boxplot,
+                    style={'flex': 1}),
+                ], className="grow-2 d-flex")
 
             ], className="d-flex grow-1"),
 
@@ -184,128 +176,6 @@ html.Div([
 
 ], className="d-flex flex-column content")
 
-
-app.layout2 = \
-html.Div([
-    html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre"),
-
-        html.Div([
-            html.H2("Tous les ports",id='selection', 
-            style={
-                'margin-top': 0, 
-                "margin-left":0,
-                "font-family": 'verdana',
-                'textAlign': 'center'}),
-            html.H4(id='slider_limit_text', style={'margin-top': 20}),
-            html.H4(id='update_relayoutData', style={'margin-top': 20}),
-            #html.H4(children=zoom_init['geo.projection.scale'],id='prev_zoom_h4', style={'margin-top': 20})
-                   
-        ]),
-
-        #div row 1
-        html.Div([
-            
-            #div dropdown et barchart
-            html.Div([
-                #ligne dropdown
-                html.Div([
-                    #dropdown Region
-                    html.Div([ 
-                        dcc.Dropdown(
-                            id="region_dropdown",
-                            options=[
-                                {'label':x, 'value': x} for x in barchart_data["Departure Region"].unique()
-                            ],
-                            placeholder="Region"
-                            
-                        )
-                    ], style={'flex':3, 'margin-right':'1em'}),
-
-                    #dropdown Harbour
-                    html.Div([ 
-                        dcc.Dropdown(
-                            id="harbour_dropdown",
-                            options=[
-                                {'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()
-                            ],
-                            placeholder="Harbour"
-                        )
-                    ], style={'flex':3})
-                ], style={'display':'flex', 'justify-content':'space-between'}
-                ),
-
-                #ligne barchart
-                html.Div([
-                    html.Div([ 
-                        #html.H3('Column 2'),
-                        #gérer la taille du bar chart en fonction du nombre de ligne de la figure (mais il faut sélectionner la bonne)
-                        dcc.Graph(id="barchart",figure= fig_bar, style={'height':max(4*(len(fig_bar.data[0]['y'])-14),100)}
-                            )]
-                            ,style={'max-height':150, 'overflow-y': "scroll", 'position': "relative",'margin-top': 5}        
-                    ),
-                ])
-            ], style = {'margin-bottom':25}),
-
-            #div map et slider
-            html.Div([
-                dcc.Graph(figure=fig_departure, id='map_departure'),
-                dcc.Slider(
-                    min=0, 
-                    max=4, 
-                    step=0.01,
-                    id='slider_updatemode',
-                    marks={i: '{}'.format(10 ** i) for i in range(5)},
-                    value=2,
-                    updatemode='drag'
-                )
-            ])
-
-        ], id='first_row', style={'display':'flex', 'width':'30%','flex-direction':'column'}),
-        
-        #html.H4(id='coord', style={'margin-top': 20}),
-
-        html.Div([
-            html.Div([
-                        dcc.Graph(id="sankey",figure=fig_sankey) 
-                    ], style={'flex':1}),
-
-            html.Div([
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic) 
-            ], style={'flex':1}),
-            
-        ], id='second_row', style={'display':'flex', 'width':'100%'}),
-
-
-        html.Div([
-            html.Div([
-                        dcc.Dropdown(options=[{'value':year, 'label':year} for year in years], 
-                                        # value=years[0], 
-                                        id='year-dropdown',
-                                        optionHeight=35,                    #height/space between dropdown options
-                                        disabled=False,                     #disable dropdown value selection
-                                        multi=False,                        #allow multiple dropdown values to be selected
-                                        searchable=True,                    #allow user-searching of dropdown values
-                                        search_value='',                    #remembers the value searched in dropdown
-                                        placeholder='Selectionnez une année',     #gray, default text shown when no option is selected
-                                        clearable=True,                     #allow user to removes the selected value
-                                        style={'width':"60%",
-                                        "align":"center"},             #use dictionary to define CSS styles of your dropdown
-                            ),
-                        dcc.Graph(id='linechart')
-                    ], style={'flex':1}),
-
-            html.Div([
-                dcc.Graph(id="boxplot", figure=fig_boxplot)
-            ], style={'flex':2})
-        ], id='third_row', style={'display':'flex', "width":'100%'}),
-
-
-    
-        dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
-        dcc.Store(id="selection_data",data = {"type":"All","value":"All","slider":100}, storage_type='memory')
-
-       
-], id='global', style={'display':'flex', 'align_items':'center', 'flex-direction':'column', 'width':'100%'})
 
 #html.H4(id='slider_limit_text', style={'margin-top': 20}-),
 #hidden div , style={‘display’:‘none’}
@@ -497,9 +367,6 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
 
     else:
         return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
-
-
-
 
 
 #filtre du bar chart sur les ports de la région sélectionnée

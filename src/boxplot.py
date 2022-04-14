@@ -31,7 +31,6 @@ def trace_boxplot(df):
 
     fig.update_layout(
         title='Distribution des dimensions des navires',
-        height=400,
         showlegend=False,
     )
 
