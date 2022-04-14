@@ -60,6 +60,18 @@ html, body, #react-entry-point, .content {
     margin: 4px;
 } 
 
+.mb-0 {
+    margin-bottom: 0px;
+}
+
+.mt-0 {
+    margin-top: 0px;
+}
+
 .center {
     text-align: center;
+}
+
+.center-items {
+    align-items: center;
 }

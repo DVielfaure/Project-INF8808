@@ -79,8 +79,13 @@ def transform_value(value):
 app.layout = \
 html.Div([
     html.Div([
-        html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre m-1"),
-    ], className="card m-1"),
+        # html.H5('Trafic maritime par ', className="titre m-1 grow-1"),
+        html.Div([
+            html.H2('Trafic maritime', className="titre"),
+            html.Div("par Xperts Solutions Technologies"),
+        ], className="grow-1"),
+        html.H2("Tous les ports",id='selection', className="titre center grow-3"),
+    ], className="card m-1 mb-0 d-flex center-items"),
 
     html.Div([ # container
         html.Div([ # left side
@@ -126,8 +131,6 @@ html.Div([
         ], className="d-flex flex-column grow-1 card"),
         
         html.Div([ # rigth side
-            html.H2("Tous les ports",id='selection', className="titre card center"),
-
             html.Div([
                 dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1 card"),
                 dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1 card"),
@@ -152,7 +155,7 @@ html.Div([
 
         ], className="d-flex flex-column grow-3"),
 
-    ], className="d-flex grow-1 m-1"),
+    ], className="d-flex grow-1 m-1 mt-0"),
 
     dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
     dcc.Store(id="selection_data",data = {"type":"All","value":"All","slider":100}, storage_type='memory')

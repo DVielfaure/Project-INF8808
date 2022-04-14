@@ -19,7 +19,7 @@ def get_linechart(linechart_data,harbour=None):
     fig.update_layout(
         title="Évolution du traffic sur l'année",
         title_x=0.5,
-        margin=dict(l=0, r=0, t=26, b=0, pad=0)
+        margin=dict(l=14, r=14, t=32, b=14, pad=0)
     )
 
     return fig
