@@ -26,7 +26,7 @@ import plotly.express as px
 import sankey
 import bar_chart
 import boxplot
-
+import linechart
 
 
 app = dash.Dash(__name__)
@@ -44,21 +44,12 @@ map_data_arrival = preprocess.get_map_data(data,"Arrival")
 
 barchart_data = preprocess.get_barchart_data(data,"Departure")
 
+linechart_data = preprocess.get_linechart_data(data)
 
-#preprocess lineshart
-dff=preprocess.traffic_per_time(data, scale="day")
-dff = dff.groupby('Date')['Traffic'].sum().reset_index()
-dff["Departure Year"] = pd.to_datetime(dff["Date"]).dt.year.astype('str')
-years = dff['Departure Year'].drop_duplicates().sort_values().tolist()
-
-
-# #Get dataframes for Sankey diagram
 sankey_data = preprocess.get_sankey_data(data, port_central)
 
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
 
-# #Call function to trace sankey
-fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
 
 #figures
 
@@ -72,6 +63,10 @@ fig_bar = map_viz.get_barchart(barchart_data,"Departure",100)
 fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
 fig_boxplot = boxplot.trace_boxplot(data)
+
+fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
+
+fig_linechart = linechart.get_linechart(linechart_data)
 
 
 def transform_value(value):
@@ -138,20 +133,7 @@ html.Div([
 
             html.Div([
                 html.Div([
-                    dcc.Dropdown(
-                        options=[{'value':year, 'label':year} for year in years], 
-                        # value=years[0], 
-                        id='year-dropdown',
-                        optionHeight=35,                    #height/space between dropdown options
-                        disabled=False,                     #disable dropdown value selection
-                        multi=False,                        #allow multiple dropdown values to be selected
-                        searchable=True,                    #allow user-searching of dropdown values
-                        search_value='',                    #remembers the value searched in dropdown
-                        placeholder='Selectionnez une année',     #gray, default text shown when no option is selected
-                        clearable=True,                     #allow user to removes the selected value
-                        # style={'width':"60%", "align":"center"},             #use dictionary to define CSS styles of your dropdown
-                    ),
-                    
+                                       
                     html.Div([dcc.Graph(
                         id='linechart',
                         style={'flex': 1}
@@ -245,7 +227,8 @@ def affichage_selection(selection_data):
 #update viz lorsque selection change
 @app.callback([Output('boxplot', 'figure'),
             Output('sankey','figure'),
-            Output('bar_chart_traffic','figure')],
+            Output('bar_chart_traffic','figure'),
+            Output('linechart','figure')],
             [Input('selection_data','data')])
 def update_viz(selection_data):
 
@@ -253,7 +236,7 @@ def update_viz(selection_data):
         
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
 
-        return fig__boxplot, dash.no_update, dash.no_update
+        return fig__boxplot, dash.no_update, dash.no_update, dash.no_update
 
     if selection_data["type"] == "Harbour":
         
@@ -265,13 +248,18 @@ def update_viz(selection_data):
         bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=selection_data["value"])
         fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
 
-        return fig__boxplot, fig__sankey, fig__bar_traffic
+        fig__linechart = linechart.get_linechart(linechart_data, selection_data["value"])
+
+        return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
     
     if selection_data["type"] == "All":
 
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, None)
 
-        return fig__boxplot, dash.no_update, dash.no_update
+        fig__linechart = linechart.get_linechart(linechart_data)
+
+        return fig__boxplot, dash.no_update, dash.no_update, fig__linechart
+
 
 
 ### callback pour la map
@@ -413,53 +401,3 @@ def update_dropdown_harbour(region_value):
     return options
 
 
-
-
-#Callback lineshart
-
-@app.callback(
-    Output('linechart', 'figure'),
-    [Input('year-dropdown', 'value'),
-    Input('harbour_dropdown','value')]
-)
-def update_output(year,harbour_value):
-
-    print('year', year)
-    dff1 = dff[dff['Departure Year'] == year].sort_values('Date')
-    
-    if harbour_value == None:
-        
-
-        fig = px.line(dff1,
-            x='Date',
-            y='Traffic',
-            title=f"Evolution du trafic par mois")
-                                #hover_data={'BUSINESS_NAME': True, 'LATITUDE': False, 'LONGITUDE': False,
-                                            #'APP_SQ_FT': True})
-
-    else:
-        dff2 = preprocess.traffic_per_time(data, scale="day")
-        dff2 = dff2[dff2["Departure Hardour"]== harbour_value]
-        dff2 = dff2.groupby(['Date'])['Traffic'].sum().reset_index()
-        
-        print(dff2.columns)
-
-        dff2["Departure Year"] = pd.to_datetime(dff2["Date"]).dt.year.astype('str')
-        dff2 = dff2[dff2['Departure Year'] == year].sort_values('Date')
-    
-
-
-        fig = px.line(dff2,
-            x='Date',
-            y='Traffic',
-            title=f"Evolution du trafic journalier",
-                                #hover_data={'BUSINESS_NAME': True, 'LATITUDE': False, 'LONGITUDE': False,
-                                            #'APP_SQ_FT': True}) 
-            )
-
-    
-    fig.update_layout(
-        title_x=0.5,
-        margin=dict(l=0, r=0, t=26, b=0, pad=0),
-    )
-    return fig
