@@ -125,8 +125,9 @@ html.Div([
             html.Div([dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
-                style={'height': '100%'}
-            )], className="grow-1"),
+                # style={'height': '50%'}
+                style={'flex': 1}
+            )], className="grow-1 d-flex flex-column"),
 
             dcc.Slider(
                 min=0, 
@@ -138,14 +139,14 @@ html.Div([
                 updatemode='drag'
             ),
 
-        ], className="w-40 d-flex flex-column"),
+        ], className="d-flex flex-column grow-1"),
         
         html.Div([ # rigth side
 
             html.Div([
-                dcc.Graph(id="sankey",figure=fig_sankey, className="w-100"),
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="w-100"),
-            ], className="d-flex h-100"),
+                dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1"),
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1"),
+            ], className="d-flex grow-1"),
 
             html.Div([
                 html.Div([
@@ -163,16 +164,21 @@ html.Div([
                         # style={'width':"60%", "align":"center"},             #use dictionary to define CSS styles of your dropdown
                     ),
                     
-                    dcc.Graph(id='linechart'),
-                ], className="w-100"),
-                dcc.Graph(id="boxplot", figure=fig_boxplot, className="w-100"),
+                    html.Div([dcc.Graph(
+                        id='linechart',
+                        style={'flex': 1}
+                    )], className='grow-1 d-flex'),
 
-            ], className="d-flex h-100"),
+                ], className="grow-1 d-flex flex-column"),
 
-        ], className="d-flex flex-column w-100"),
+                dcc.Graph(id="boxplot", figure=fig_boxplot, className="grow-1"),
 
-    ], className="d-flex h-100")
-], className="d-flex flex-column", style={"width": "100%", "height": "100%"}) #style obligatoire sinon scroll bars
+            ], className="d-flex grow-1"),
+
+        ], className="d-flex flex-column grow-3"),
+
+    ], className="d-flex grow-1")
+], className="d-flex flex-column content")
 
 
 app.layout2 = \

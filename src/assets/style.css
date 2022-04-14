@@ -3,8 +3,9 @@
     margin: 0;
 }
 
-html, body, #react-entry-point {
+html, body, #react-entry-point, .content {
     height: 100%;
+    width: 100%;
 }
 
 .titre {
@@ -21,43 +22,12 @@ html, body, #react-entry-point {
     flex-direction: column;
 }
 
-.d-grid {
-    display: grid;
-    grid-template-rows: auto auto;
-    grid-template-columns:auto auto;
-    gap: 10px;
-}
-
-.space-between {
-    justify-content: space-between;
-}
-
-.content-stretch {
-    align-content: stretch;
-}
-
-.w-100 {
-    width: 100%
-}
-
-.w-40 {
-    width: 40%
-}
-
 .grow-1 {
-    flex-grow: 1;
+    flex: 1;
 }
 
-.grow-2 {
-    flex-grow: 2;
-}
-
-.h-100vh {
-    height: 100vh;
-}
-
-.h-100 {
-    height: 100%;
+.grow-3 {
+    flex: 3;
 }
 
 .trafic-port {
