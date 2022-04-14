@@ -8,6 +8,10 @@ html, body, #react-entry-point, .content {
     width: 100%;
 }
 
+.content {
+    background-color: rebeccapurple;
+}
+
 .titre {
     text-align: center;
     font-family: Verdana;
@@ -15,7 +19,7 @@ html, body, #react-entry-point, .content {
 
 .d-flex {
     display: flex;
-    gap: 10px 10px;
+    gap: 4px 4px;
 }
 
 .flex-column {
@@ -38,3 +42,14 @@ html, body, #react-entry-point, .content {
     max-height: 300px;
     overflow-y: scroll;
 }
+
+.card {
+    border-radius: 4px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+    background-color: white;
+    padding: 6px;  
+}
+
+.m-1 {
+    margin: 4px;
+} 
