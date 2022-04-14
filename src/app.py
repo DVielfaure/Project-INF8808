@@ -33,7 +33,7 @@ app = dash.Dash(__name__)
 app.title = 'Projet Xperts Solutions'
 
 #Hardcoded input
-port_central = "St. John's"
+port_central = "Ports du Canada" #"St. John's"
 
 #Read csv and create dataframe
 data = preprocess.create_dataframe_from_csv().head(1000)
