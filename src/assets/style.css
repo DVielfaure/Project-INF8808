@@ -9,7 +9,7 @@ html, body, #react-entry-point, .content {
 }
 
 .content {
-    background-color: rebeccapurple;
+    background-color: LightBlue;
 }
 
 .titre {
@@ -53,3 +53,7 @@ html, body, #react-entry-point, .content {
 .m-1 {
     margin: 4px;
 } 
+
+.center {
+    text-align: center;
+}

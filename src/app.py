@@ -36,7 +36,7 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-data = preprocess.create_dataframe_from_csv().head(1000)
+data = preprocess.create_dataframe_from_csv()
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")
@@ -78,9 +78,11 @@ def transform_value(value):
 
 app.layout = \
 html.Div([
-    html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre card m-1"),
-    html.H2("Tous les ports",id='selection', className="titre"),
-    html.H4("Ports", id='slider_limit_text'),
+    html.Div([
+        html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre m-1"),
+        html.H2("Tous les ports",id='selection', className="titre m-1"),
+    ], className="card m-1"),
+    
     html.H4(id='update_relayoutData'),
 
     html.Div([ # container
@@ -111,6 +113,8 @@ html.Div([
                 figure=fig_departure,
                 id='map_departure',
             ),
+
+            html.H4("Ports", id='slider_limit_text', className="m-1 center"),
 
             dcc.Slider(
                 min=0, 

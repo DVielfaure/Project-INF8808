@@ -53,5 +53,4 @@ def update_traces_boxplot(df, fig, region, harbour):
     fig.update_traces(y=data['DeadWeight Tonnage'], boxpoints=points, row=1, col=3)
     fig.update_traces(y=data['Maximum Draugth'], boxpoints=points, row=1, col=4)    
 
-    fig.update_layout(title=f"Distribution des dimensions des navires dans la region de {region}, le port {harbour}", title_x=0.5)
     return fig
