@@ -366,3 +366,45 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_
         return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
 
 
+#filtre du bar chart sur les ports de la région sélectionnée
+@app.callback([Output("barchart","figure"),
+                Output("barchart",'style')],
+            [Input('region_dropdown','value'),
+            Input('slider_updatemode','value')
+            #,Input('map_chart','relayoutData')
+            ])
+def update_barchart(region_dropdown,slider_value):
+
+    #clear value du dropdown
+
+    #s'il y a une région de sélectionnée
+    if region_dropdown != None:
+
+        filtered_data = barchart_data[barchart_data["Departure Region"]==region_dropdown]
+        fig = map_viz.get_barchart(filtered_data,"Departure",lim=int(10**slider_value))
+
+        style={'height':max(25*(len(fig.data[0]['y'])),200)}
+
+        return fig, style
+
+    #pas de région de sélectionnée, filtre selon les ports affichés
+    else:
+
+        fig = map_viz.get_barchart(barchart_data,"Departure",lim=int(10**slider_value))
+
+        style={'height':max(25*(len(fig.data[0]['y'])),200)}
+
+        return fig, style
+
+
+#filtre les valeurs du dropdown des ports si une région est sélectionnée 
+@app.callback(Output('harbour_dropdown','options'),
+                [Input('region_dropdown', 'value')])
+def update_dropdown_harbour(region_value):
+
+    if region_value == None:
+        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()]
+    else:
+        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Hardour"].unique()]
+
+    return options
