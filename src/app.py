@@ -80,6 +80,17 @@ def transform_value(value):
 # Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
 # tooltip={"placement": "bottom", "always_visible": True})
 
+dff = px.data.gapminder().query("year == 2007")
+figg = px.scatter_geo(dff, locations="iso_alpha", size="pop")
+
+
+app.layout3 = \
+html.Div([
+    dcc.Graph(
+        figure=fig_departure,
+    )
+])
+
 app.layout = \
 html.Div([
     html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre"),
@@ -114,7 +125,8 @@ html.Div([
             html.Div([dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
-            )], className="h-100"),
+                style={'height': '100%'}
+            )], className="grow-1"),
 
             dcc.Slider(
                 min=0, 
@@ -159,7 +171,7 @@ html.Div([
 
         ], className="d-flex flex-column"),
 
-    ], className="d-flex space-between grow-1")
+    ], className="d-flex h-100")
 ], className="h-100 d-flex flex-column")
 
 

@@ -90,14 +90,16 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
 
     fig.update_traces(marker=dict(size=9))
 
-    fig.update_layout(width=400,#height=400,
-                    margin={"r": 0, "t": 0, "l": 0, "b": 0, "pad":4 , "autoexpand":True},
-                    autosize=False,
-                    mapbox_center=go.layout.mapbox.Center(
-                        lat=48,
-                        lon=-100),
-                    #min_zoom=1.3
-                    )
+    fig.update_layout(
+        # width=1000,
+        # height=500,
+        margin={"r": 0, "t": 0, "l": 0, "b": 0, "pad":0 , "autoexpand":True},
+        # autosize=False,
+        mapbox_center=go.layout.mapbox.Center(
+        lat=48,
+        lon=-100),
+        #min_zoom=1.3
+    )
 
        
             
