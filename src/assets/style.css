@@ -9,8 +9,9 @@ html, body, #react-entry-point, .content {
 }
 
 .titre {
-    text-align: center;
+    text-align: left;
     font-family: Verdana;
+    font-size: 20;
 }
 
 .d-flex {
@@ -20,6 +21,11 @@ html, body, #react-entry-point, .content {
 
 .flex-column {
     flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
 }
 
 .grow-1 {

@@ -209,3 +209,18 @@ def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = traffic_per_time(df_cop, time_scale)
     df_cop = df_cop.drop(df_cop.columns[0], axis=1)
     return df_cop
+
+
+
+def get_linechart_data(data):
+
+    df = traffic_per_time(data, scale="day")
+    df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
+
+    df = df.reset_index().drop(["level_0", "index"], axis=1)
+
+    df = df.groupby(["Departure Hardour","month-day"]).sum().reset_index()
+
+    df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
+    
+    return df
