@@ -143,8 +143,8 @@ html.Div([
         html.Div([ # rigth side
 
             html.Div([
-                dcc.Graph(id="sankey",figure=fig_sankey),
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic),
+                dcc.Graph(id="sankey",figure=fig_sankey, className="w-100"),
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="w-100"),
             ], className="d-flex h-100"),
 
             html.Div([
@@ -169,10 +169,10 @@ html.Div([
 
             ], className="d-flex h-100"),
 
-        ], className="d-flex flex-column"),
+        ], className="d-flex flex-column w-100"),
 
     ], className="d-flex h-100")
-], className="h-100 d-flex flex-column")
+], className="d-flex flex-column", style={"width": "100%", "height": "100%"}) #style obligatoire sinon scroll bars
 
 
 app.layout2 = \
