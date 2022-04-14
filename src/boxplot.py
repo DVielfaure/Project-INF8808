@@ -10,11 +10,11 @@ def boxplot(dataY, name, color):
         y=dataY,
         name=name,
         boxpoints=points,
-        jitter=0.4,
+        jitter=0.3,
         whiskerwidth=0.2,
         fillcolor=color,
-        marker_size=6,
-        marker_opacity=0.5,
+        marker_size=3,
+        marker_opacity=0.2,
         line_width=1,
         boxmean=True,
     )
@@ -32,6 +32,8 @@ def trace_boxplot(df):
     fig.update_layout(
         title='Distribution des dimensions des navires',
         showlegend=False,
+        title_x=0.5,
+        margin=dict(l=0, r=0, t=26, b=0, pad=0),
     )
 
     return fig
@@ -51,5 +53,4 @@ def update_traces_boxplot(df, fig, region, harbour):
     fig.update_traces(y=data['DeadWeight Tonnage'], boxpoints=points, row=1, col=3)
     fig.update_traces(y=data['Maximum Draugth'], boxpoints=points, row=1, col=4)    
 
-    fig.update_layout(title="Distribution des dimensions des navires", height=400)
     return fig

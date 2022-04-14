@@ -36,7 +36,7 @@ app.title = 'Projet Xperts Solutions'
 port_central = "St. John's"
 
 #Read csv and create dataframe
-data = preprocess.create_dataframe_from_csv()
+data = preprocess.create_dataframe_from_csv().head(1000)
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")
@@ -78,13 +78,9 @@ def transform_value(value):
 
 app.layout = \
 html.Div([
-
     html.Div([
-        html.H3('Trafic maritime par Xperts Solutions Technologies', className="titre"),
-        html.H5("Tous les ports",id='selection', className="titre"),
-    
-    ], className="flex-row"),
-    
+        html.H1('Trafic maritime par Xperts Solutions Technologies', className="titre m-1"),
+    ], className="card m-1"),
 
     html.Div([ # container
         html.Div([ # left side
@@ -115,7 +111,7 @@ html.Div([
                 id='map_departure',
             ),
             
-            html.H5(id='slider_limit_text', style={"text-align":"center"}),
+            html.H4("Ports", id='slider_limit_text', className="m-1 center"),
 
             dcc.Slider(
                 min=0, 
@@ -125,43 +121,38 @@ html.Div([
                 marks={i: '{}'.format(10 ** i) for i in range(5)},
                 value=2,
                 updatemode='drag'
-            ),  
+            ),
 
-              
-
-            
-            
-
-        ], className="d-flex flex-column grow-1"),
+        ], className="d-flex flex-column grow-1 card"),
         
         html.Div([ # rigth side
+            html.H2("Tous les ports",id='selection', className="titre card center"),
 
             html.Div([
-                dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1"),
-                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1"),
+                dcc.Graph(id="sankey",figure=fig_sankey, className="grow-1 card"),
+                dcc.Graph(id="bar_chart_traffic", figure=fig_bar_traffic, className="grow-1 card"),
             ], className="d-flex grow-1"),
 
             html.Div([
-                html.Div([
-                                        
+                html.Div([       
                     html.Div([dcc.Graph(
                         id='linechart',
                         style={'flex': 1}
                     )], className='grow-1 d-flex'),
 
-                ], className="grow-1 d-flex flex-column"),
+                ], className="grow-1 d-flex flex-column card"),
 
                 html.Div([dcc.Graph(
                     id="boxplot",
                     figure=fig_boxplot,
                     style={'flex': 1}),
-                ], className="grow-2 d-flex")
+                ], className="grow-2 d-flex card")
 
             ], className="d-flex grow-1"),
 
         ], className="d-flex flex-column grow-3"),
 
-    ], className="d-flex grow-1"),
+    ], className="d-flex grow-1 m-1"),
 
     dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
     dcc.Store(id="selection_data",data = {"type":"All","value":"All","slider":100}, storage_type='memory')
