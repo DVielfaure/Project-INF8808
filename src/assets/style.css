@@ -1,0 +1,40 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body, #react-entry-point, .content {
+    height: 100%;
+    width: 100%;
+}
+
+.titre {
+    text-align: center;
+    font-family: Verdana;
+}
+
+.d-flex {
+    display: flex;
+    gap: 10px 10px;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.grow-1 {
+    flex: 1;
+}
+
+.grow-2 {
+    flex: 2;
+}
+
+.grow-3 {
+    flex: 3;
+}
+
+.trafic-port {
+    max-height: 300px;
+    overflow-y: scroll;
+}

@@ -55,7 +55,9 @@ def trace_sankey(df_departure, df_arrival, port_central):
         value = value,
         hovertemplate='Provenance: %{source.label}<br />'+
           'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
-    ))])
+      ),
+      textfont=dict(size=10)
+      )])
 
   #Add title
   fig.update_layout(title_text="Flux entrants et flux sortants du port de " + port_central, font_size=15)
