@@ -177,7 +177,11 @@ html.Div([
 
         ], className="d-flex flex-column grow-3"),
 
-    ], className="d-flex grow-1")
+    ], className="d-flex grow-1"),
+
+    dcc.Store(id="store_prev_zoom",data = zoom_init['geo.projection.scale'], storage_type='memory'),
+    dcc.Store(id="selection_data",data = {"type":"All","value":"All","slider":100}, storage_type='memory')
+
 ], className="d-flex flex-column content")
 
 
