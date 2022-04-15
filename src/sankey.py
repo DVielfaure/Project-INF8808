@@ -8,26 +8,27 @@ def trace_sankey(df_departure, df_arrival, port_central):
   list_departure_counts = df_departure.tolist()
   list_arrival_counts = df_arrival.tolist()
   
-  #Count others
-  departure_other_count = 0
-  for n1 in list_departure_counts[5:]:
-    departure_other_count += n1
+  if port_central != "Ports du Canada":
+    #Count others
+    departure_other_count = 0
+    for n1 in list_departure_counts[5:]:
+      departure_other_count += n1
+      
+    arrival_other_count = 0
+    for n2 in list_arrival_counts[5:]:
+      arrival_other_count += n2
+      
+    #Keep only top 5
+    list_departure_harbours = df_departure.index.tolist()[0:5]
+    list_arrival_harbours = df_arrival.index.tolist()[0:5]
+    list_departure_counts = df_departure.tolist()[0:5]
+    list_arrival_counts = df_arrival.tolist()[0:5]
     
-  arrival_other_count = 0
-  for n2 in list_arrival_counts[5:]:
-    arrival_other_count += n2
-    
-  #Keep only top 5
-  list_departure_harbours = df_departure.index.tolist()[0:5]
-  list_arrival_harbours = df_arrival.index.tolist()[0:5]
-  list_departure_counts = df_departure.tolist()[0:5]
-  list_arrival_counts = df_arrival.tolist()[0:5]
-  
-  #Append others to list
-  list_departure_harbours.append("Others")
-  list_arrival_harbours.append("Others")
-  list_departure_counts.append(departure_other_count)
-  list_arrival_counts.append(arrival_other_count)
+    #Append others to list
+    list_departure_harbours.append("Others")
+    list_arrival_harbours.append("Others")
+    list_departure_counts.append(departure_other_count)
+    list_arrival_counts.append(arrival_other_count)
   
   #Concatenate lists for sankey
   label = []
@@ -39,28 +40,51 @@ def trace_sankey(df_departure, df_arrival, port_central):
   value.extend(list_arrival_counts)
   value.extend(list_departure_counts)
 
-  
-  #Trace sankey
-  fig = go.Figure(data=[go.Sankey(
-      node = dict(
-        pad = 15,
-        thickness = 20,
-        line = dict(color = "grey", width = 0.0),
-        label = label,
-        color = ["blue", "blue", "blue", "blue", "blue", "blue", "gray", "blue", "blue", "blue", "blue", "blue", "blue"]
-      ),
-      link = dict(
-        source = [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6],
-        target = [6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12],
-        value = value,
-        hovertemplate='Provenance: %{source.label}<br />'+
-          'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
-      ),
-      textfont=dict(size=10)
-      )])
+  if port_central != "Ports du Canada":
+    #Trace sankey
+    fig = go.Figure(data=[go.Sankey(
+        node = dict(
+          pad = 15,
+          thickness = 20,
+          line = dict(color = "grey", width = 0.0),
+          label = label,
+          color = ["blue", "blue", "blue", "blue", "blue", "blue", "gray", "blue", "blue", "blue", "blue", "blue", "blue"]
+        ),
+        link = dict(
+          source = [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6],
+          target = [6, 6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 12],
+          value = value,
+          hovertemplate='Provenance: %{source.label}<br />'+
+            'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
+        ),
+        textfont=dict(size=10)
+        )])
+  else:
+    #Trace sankey
+    fig = go.Figure(data=[go.Sankey(
+        node = dict(
+          pad = 15,
+          thickness = 20,
+          line = dict(color = "grey", width = 0.0),
+          label = label,
+          color = ["blue", "blue", "gray", "blue", "blue"]
+        ),
+        link = dict(
+          source = [0, 1, 2, 2],
+          target = [2, 2, 3, 4],
+          value = value,
+          hovertemplate='Provenance: %{source.label}<br />'+
+            'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
+        ),
+        textfont=dict(size=10)
+        )])
 
   #Add title
-  fig.update_layout(title_text="Flux entrants et flux sortants du port de " + port_central, font_size=15)
+  fig.update_layout(
+    title_text="Flux entrants et flux sortants",
+    title_x=0.5,
+    margin=dict(l=14, r=14, t=32, b=14, pad=0),
+  )
 
   #Show figure for development
   return fig
