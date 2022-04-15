@@ -190,16 +190,35 @@ def get_sankey_data(dataframe, port_central):
                     'Vessel Type', 'DeadWeight Tonnage',
                     'Maximum Draugth', 'Arrival Date'], axis=1)
     
-    #Filter with the right central harbour
-    df_departure = df_sankey.loc[dataframe['Arrival Hardour'] == port_central]
-    df_arrival = df_sankey.loc[dataframe['Departure Hardour'] == port_central]
+    if port_central == "Ports du Canada":
+        df_departure = df_sankey.loc[dataframe['Departure Hardour'].str.contains("Virtual Harbour", case=False)]
+        df_arrival = df_sankey.loc[dataframe['Arrival Hardour'].str.contains("Virtual Harbour", case=False)]
+        
+        #Count number of occurences
+        Nb_departure_international = df_departure.shape[0]
+        Nb_arrival_international = df_arrival.shape[0]
+        Nb_departure_intra = dataframe.shape[0] - Nb_departure_international + Nb_arrival_international
+        Nb_arrival_intra = dataframe.shape[0] - Nb_departure_international + Nb_arrival_international
+        
+        d_departure = {'International': Nb_departure_international, 'Intra-Canada': Nb_departure_intra}
+        d_arrival = {'International': Nb_arrival_international, 'Intra-Canada': Nb_arrival_intra}
+        df_departure = pd.Series(data=d_departure, index=['International', 'Intra-Canada'])
+        df_arrival = pd.Series(data=d_arrival, index=['International', 'Intra-Canada'])
+ 
+        #Returns the two dataframes
+        return df_departure, df_arrival
+        
+    else:
+        #Filter with the right central harbour
+        df_departure = df_sankey.loc[dataframe['Arrival Hardour'] == port_central]
+        df_arrival = df_sankey.loc[dataframe['Departure Hardour'] == port_central]
 
-    #Count number of occurences
-    df_departure = df_departure['Departure Hardour'].value_counts()
-    df_arrival = df_arrival['Arrival Hardour'].value_counts()
-    
-    #Returns the two dataframes
-    return df_departure, df_arrival
+        #Count number of occurences
+        df_departure = df_departure['Departure Hardour'].value_counts()
+        df_arrival = df_arrival['Arrival Hardour'].value_counts()
+        
+        #Returns the two dataframes
+        return df_departure, df_arrival
 
 def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = df.copy()
@@ -209,3 +228,18 @@ def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = traffic_per_time(df_cop, time_scale)
     df_cop = df_cop.drop(df_cop.columns[0], axis=1)
     return df_cop
+
+
+
+def get_linechart_data(data):
+
+    df = traffic_per_time(data, scale="day")
+    df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
+
+    df = df.reset_index().drop(["level_0", "index"], axis=1)
+
+    df = df.groupby(["Departure Hardour","month-day"]).sum().reset_index()
+
+    df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
+    
+    return df
