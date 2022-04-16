@@ -40,7 +40,7 @@ data = preprocess.create_dataframe_from_csv()
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")
-map_data_arrival = preprocess.get_map_data(data,"Arrival")
+# map_data_arrival = preprocess.get_map_data(data,"Arrival")
 
 barchart_data = preprocess.get_barchart_data(data,"Departure")
 
@@ -75,6 +75,7 @@ def transform_value(value):
 # Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
 # tooltip={"placement": "bottom", "always_visible": True})
 
+# app.layout = dcc.Graph(figure=fig_departure, id='map_departure2', style={'height': '100%', 'width' : '100%'})
 
 app.layout = \
 html.Div([
@@ -107,16 +108,20 @@ html.Div([
 
             html.Div([dcc.Graph(
                 id="barchart",
-                figure= fig_bar, 
-                style={'height':max(4*(len(fig_bar.data[0]['y']) - 14), 100)},
+                figure= fig_bar,
             )], className="trafic-port"),
 
             dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
+                style={'height':'fit-content','width' : '100%'}
             ),
             
-            html.H4("Ports", id='slider_limit_text', className="m-1 center"),
+            html.H4(
+                "Ports", 
+                id='slider_limit_text',
+                className="m-1 center"
+            ),
 
             dcc.Slider(
                 min=0, 
@@ -125,7 +130,8 @@ html.Div([
                 id='slider_updatemode',
                 marks={i: '{}'.format(10 ** i) for i in range(5)},
                 value=2,
-                updatemode='drag'
+                updatemode='drag',
+                verticalHeight=32,
             ),
 
         ], className="d-flex flex-column grow-1 card"),

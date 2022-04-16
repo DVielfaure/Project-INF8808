@@ -129,7 +129,8 @@ def get_barchart(data,type,lim=0):
 
     fig.update_layout(
         bargap=0.5,
-        width=300,#height=400,
+        # width=300,
+        #height=400,
         margin={"r": 0, "t": 20, "l": 200, "b": 0, "pad":4 , "autoexpand":True},
 
         xaxis_anchor="free",
