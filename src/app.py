@@ -5,6 +5,7 @@
 import json
 from pydoc import classname
 from tarfile import FIFOTYPE
+import time
 from zipfile import ZIP_MAX_COMMENT
 import dash
 
@@ -36,7 +37,12 @@ app.title = 'Projet Xperts Solutions'
 port_central = "Ports du Canada" #"St. John's"
 
 #Read csv and create dataframe
+start = time.time()
 data = preprocess.create_dataframe_from_csv()
+print("data", time.time() - start)
+
+
+
 
 #données preprocess
 map_data_departure = preprocess.get_map_data(data,"Departure")

@@ -1,8 +1,15 @@
+from functools import reduce
+from threading import Thread
+import time
 import pandas as pd
 
+def thread_read_csv(result, index, file_name):
+    result[index] = pd.read_csv(file_name)
 
 def create_dataframe_from_csv():
-    list_csv = ['Departure Date', 
+
+
+    list_csv = ['Id', 'Departure Date', 
             'Departure Hardour', 'Departure Region', 
             'Departure Latitude', 'Departure Longitude', 
             'Arrival Date', 'Arrival Hardour', 
@@ -11,15 +18,26 @@ def create_dataframe_from_csv():
             'Lenght', 'Width', 
             'DeadWeight Tonnage', 'Maximum Draugth']
 
-    #Initial dataframe
-    dataframe = pd.read_csv('./data/Id.csv')
+
+    threads = [None] * len(list_csv)
+    results = [None] * len(list_csv)
 
     #Combine dataframes
-    for file in list_csv:
-        file_name = "data/" + file + ".csv"
-        dataframe_temporary = pd.read_csv(file_name)
-        dataframe = dataframe.join(dataframe_temporary)
-        
+    for i in range(len(list_csv)):
+        file_name = "data/" + list_csv[i] + ".csv"
+        threads[i] = Thread(target=thread_read_csv, args=(results, i, file_name))
+        threads[i].start()
+
+    for i in range(len(list_csv)):
+        threads[i].join()
+
+    start = time.time()
+    dataframe = reduce(lambda left,right: left.join(right), results)
+    print("inside : ", time.time() - start)
+
+
+    print(dataframe.columns)    
+    
     return dataframe
 
 
