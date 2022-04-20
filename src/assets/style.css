@@ -12,6 +12,10 @@ html, body, #react-entry-point, .content {
     background-color: LightBlue;
 }
 
+.border {
+    border-style: solid;
+}
+
 .titre {
     text-align: left;
     font-family: Verdana;
@@ -44,9 +48,22 @@ html, body, #react-entry-point, .content {
     flex: 3;
 }
 
+.h-100 {
+    height: 100%;
+}
+
 .trafic-port {
-    max-height: 300px;
-    overflow-y: scroll;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    height: 0px;
+}
+
+.map {
+    height: 400px;
+}
+
+.map-slider {
+    height: 32px;
 }
 
 .card {
@@ -75,3 +92,46 @@ html, body, #react-entry-point, .content {
 .center-items {
     align-items: center;
 }
+
+.fullpage-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    flex-direction: column;
+    z-index: 1;
+    background-color: white;
+  }
+  
+  .loading-container {
+    width: 300px;
+    height: 35px;
+    border: solid;
+    border-radius: 10px;
+    padding: 2px;
+  }
+  
+  .loading-bar {
+    height: 100%;
+    background-color: green;
+    animation-duration: 3s;
+    animation-name: loading;
+    border-radius: 7px;
+  }
+  
+  @keyframes loading {
+      0% {
+        width: 0px;
+        background-color: red;
+  
+      }
+      
+      100% {
+        width: 100%;
+        background-color: green;
+      }
+  }

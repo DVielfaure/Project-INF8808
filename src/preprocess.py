@@ -1,8 +1,15 @@
+from functools import reduce
+from threading import Thread
+import time
 import pandas as pd
 
+def thread_read_csv(result, index, file_name):
+    result[index] = pd.read_csv(file_name)
 
 def create_dataframe_from_csv():
-    list_csv = ['Departure Date', 
+
+
+    list_csv = ['Id', 'Departure Date', 
             'Departure Hardour', 'Departure Region', 
             'Departure Latitude', 'Departure Longitude', 
             'Arrival Date', 'Arrival Hardour', 
@@ -11,15 +18,21 @@ def create_dataframe_from_csv():
             'Lenght', 'Width', 
             'DeadWeight Tonnage', 'Maximum Draugth']
 
-    #Initial dataframe
-    dataframe = pd.read_csv('./data/Id.csv')
+
+    threads = [None] * len(list_csv)
+    results = [None] * len(list_csv)
 
     #Combine dataframes
-    for file in list_csv:
-        file_name = "data/" + file + ".csv"
-        dataframe_temporary = pd.read_csv(file_name)
-        dataframe = dataframe.join(dataframe_temporary)
-        
+    for i in range(len(list_csv)):
+        file_name = "data/" + list_csv[i] + ".csv"
+        threads[i] = Thread(target=thread_read_csv, args=(results, i, file_name))
+        threads[i].start()
+
+    for i in range(len(list_csv)):
+        threads[i].join()
+
+    dataframe = reduce(lambda left,right: left.join(right), results)
+    
     return dataframe
 
 
@@ -165,11 +178,11 @@ def get_barchart_data(data,type):
             my_df: The corresponding dataframe
     '''
     #même données que pour la map sans les géo positions
-    df = get_map_data(data,type)
+    # df = get_map_data(data,type)
 
-    df = df[[type+" Hardour", type+" Region","Trafic"]]
+    # df = df[[type+" Hardour", type+" Region","Trafic"]]
 
-    return df
+    return data[[type+" Hardour", type+" Region","Trafic"]]
 
 
 def get_sankey_data(dataframe, port_central):

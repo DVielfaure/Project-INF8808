@@ -5,6 +5,7 @@
 import json
 from pydoc import classname
 from tarfile import FIFOTYPE
+import time
 from zipfile import ZIP_MAX_COMMENT
 import dash
 
@@ -28,6 +29,7 @@ import bar_chart
 import boxplot
 import linechart
 
+import pickle
 
 app = dash.Dash(__name__)
 app.title = 'Projet Xperts Solutions'
@@ -36,19 +38,21 @@ app.title = 'Projet Xperts Solutions'
 port_central = "Ports du Canada" #"St. John's"
 
 #Read csv and create dataframe
+start = time.time()
 data = preprocess.create_dataframe_from_csv()
+# pickle.dump(data, open("data.p", "wb"))
+# data = pickle.load(open("data.p", "rb"))
 
-#données preprocess
+print("first data", time.time() - start)
+
 map_data_departure = preprocess.get_map_data(data,"Departure")
-map_data_arrival = preprocess.get_map_data(data,"Arrival")
-
-barchart_data = preprocess.get_barchart_data(data,"Departure")
-
+barchart_data = preprocess.get_barchart_data(map_data_departure,"Departure")
 linechart_data = preprocess.get_linechart_data(data)
-
+# linechart_data = pickle.load(open("linechart-data.p", "rb"))
 sankey_data = preprocess.get_sankey_data(data, port_central)
-
+# sankey_data = pickle.load(open("sankey-data.p", "rb"))
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
+# bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
 
 
 #figures
@@ -62,7 +66,7 @@ fig_bar = map_viz.get_barchart(barchart_data,"Departure",100)
 
 fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
-fig_boxplot = boxplot.trace_boxplot(data)
+fig_boxplot = boxplot.trace_boxplot()
 
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
 
@@ -72,14 +76,17 @@ fig_linechart = linechart.get_linechart(linechart_data)
 def transform_value(value):
     return 10 ** value
 
-# Le tooltip du slider affiche la valeur non log, apparemment impossible de modifier cette valeur
-# tooltip={"placement": "bottom", "always_visible": True})
-
 
 app.layout = \
 html.Div([
+    # html.Div([
+    #     html.P("Loading"),
+    #     html.Div([
+    #         html.Div(className="loading-bar")
+    #     ], className="loading-container"),
+    # ], className="fullpage-container"),
+
     html.Div([
-        # html.H5('Trafic maritime par ', className="titre m-1 grow-1"),
         html.Div([
             html.H2('Trafic maritime', className="titre"),
             html.Div("par Xperts Solutions Technologies"),
@@ -107,16 +114,20 @@ html.Div([
 
             html.Div([dcc.Graph(
                 id="barchart",
-                figure= fig_bar, 
-                style={'height':max(4*(len(fig_bar.data[0]['y']) - 14), 100)},
+                figure= fig_bar,
             )], className="trafic-port"),
 
             dcc.Graph(
                 figure=fig_departure,
                 id='map_departure',
+                style={'height':'fit-content','width' : '100%'}
             ),
             
-            html.H4("Ports", id='slider_limit_text', className="m-1 center"),
+            html.H4(
+                "Ports", 
+                id='slider_limit_text',
+                className="m-1 center"
+            ),
 
             dcc.Slider(
                 min=0, 
@@ -125,7 +136,8 @@ html.Div([
                 id='slider_updatemode',
                 marks={i: '{}'.format(10 ** i) for i in range(5)},
                 value=2,
-                updatemode='drag'
+                updatemode='drag',
+                verticalHeight=32,
             ),
 
         ], className="d-flex flex-column grow-1 card"),
@@ -137,19 +149,8 @@ html.Div([
             ], className="d-flex grow-1"),
 
             html.Div([
-                html.Div([       
-                    html.Div([dcc.Graph(
-                        id='linechart',
-                        style={'flex': 1}
-                    )], className='grow-1 d-flex'),
-
-                ], className="grow-1 d-flex flex-column card"),
-
-                html.Div([dcc.Graph(
-                    id="boxplot",
-                    figure=fig_boxplot,
-                    style={'flex': 1}),
-                ], className="grow-2 d-flex card")
+                dcc.Graph(id='linechart', figure=fig_linechart, className="grow-1 card"),
+                dcc.Graph(id="boxplot", figure=fig_boxplot, className="grow-2 card"),
 
             ], className="d-flex grow-1"),
 
@@ -163,17 +164,10 @@ html.Div([
 ], className="d-flex flex-column content")
 
 
-#html.H4(id='slider_limit_text', style={'margin-top': 20}-),
-#hidden div , style={‘display’:‘none’}
-
 #https://www.somesolvedproblems.com/2021/08/how-to-add-vertical-scrollbar-to-plotly.html
 #https://community.plotly.com/t/how-to-add-vertical-scroll-bar-on-horizontal-bar-chart/12342
 
-'''
-app.css.append_css({
-    'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-})
-'''
+
 ##### CALLBACKS #####
 
 
