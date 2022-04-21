@@ -169,40 +169,52 @@ html.Div([
 
 ##### CALLBACKS #####
 
-
 #update selection 
 @app.callback(Output('selection_data','data'),
              [Input('slider_updatemode', 'value'),
               Input('region_dropdown','value'),
-              Input('harbour_dropdown','value')],
+              Input('harbour_dropdown','value'),
+              Input('map_departure','clickData')],
               [State('selection_data','data')])
-def update_selection(slider_value, region_value, harbour_value,selection):
+def update_selection(slider_value, region_value, harbour_value, clickData, selection_data):
 
         ctx = dash.callback_context
         input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+        print("update selection : ")
+
+        #clickData ne fonctionne pas 
+        #si on a cliqué sur un port sur le carte
+        if input_id == "map_departure":
+            print("clickData =",clickData)
+
+            if clickData != None:
+
+                selection_data["type"] = "Harbour"
+                selection_data["value"] = clickData["Departure Hardour"]
+
+
         #si le slider est utilisé
         if input_id == "slider_updatemode":
-            selection["slider"] = int(10**slider_value)
+            selection_data["slider"] = int(10**slider_value)
 
         #si un port est sélectionné
         if input_id == "harbour_dropdown":
-            selection["type"] = "Harbour"
-            selection["value"] = harbour_value
-            selection["slider"] = 0
+            selection_data["type"] = "Harbour"
+            selection_data["value"] = harbour_value
+            selection_data["slider"] = 0
 
         #si region sélectionnée
         if input_id == "region_dropdown":
-            selection["type"] = "Region"
-            selection["value"] = region_value
+            selection_data["type"] = "Region"
+            selection_data["value"] = region_value
 
         #si rien de sélectionné
+        if selection_data["value"] == None:
+            selection_data["type"] = "All"
 
-        if selection["value"] == None:
-            selection["type"] = "All"
-
-        print(selection)
-        return selection
+        print(selection_data)
+        return selection_data
 
 
 #affichage texte de la sélection (region, port ou all (Canada)) 
@@ -426,3 +438,7 @@ def update_dropdown_harbour(region_value):
         options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Hardour"].unique()]
 
     return options
+
+
+
+
