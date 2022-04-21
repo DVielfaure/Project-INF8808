@@ -3,10 +3,13 @@ from plotly.subplots import make_subplots
 
 MAX_DISPLAYED_POINTS = 99999
 
-def boxplot(name, color):
+def boxplot(dataY, name, color):
+    points = False if dataY.size > MAX_DISPLAYED_POINTS else 'all'
 
     return go.Box(
+        y=dataY,
         name=name,
+        boxpoints=points,
         jitter=0.3,
         whiskerwidth=0.2,
         fillcolor=color,
@@ -17,14 +20,14 @@ def boxplot(name, color):
     )
 
 
-def trace_boxplot():
+def trace_boxplot(df):
 
     fig = make_subplots(rows=1, cols=4)
 
-    fig.add_trace(boxplot('Longueur (m)', 'rgba(93, 164, 214, 0.5)'), row=1, col=1)
-    fig.add_trace(boxplot('Largeur (m)', 'rgba(255, 144, 14, 0.5)'), row=1, col=2)
-    fig.add_trace(boxplot('Capacité Maximale (kg)', 'rgba(44, 160, 101, 0.5)'), row=1, col=3)
-    fig.add_trace(boxplot("Tirant d'eau maximal (m)", 'rgba(255, 65, 54, 0.5)'), row=1, col=4)
+    fig.add_trace(boxplot(df['Lenght'], 'Longueur (m)', 'rgba(93, 164, 214, 0.5)'), row=1, col=1)
+    fig.add_trace(boxplot(df['Width'], 'Largeur (m)', 'rgba(255, 144, 14, 0.5)'), row=1, col=2)
+    fig.add_trace(boxplot(df['DeadWeight Tonnage'], 'Capacité Maximale (kg)', 'rgba(44, 160, 101, 0.5)'), row=1, col=3)
+    fig.add_trace(boxplot(df['Maximum Draugth'], "Tirant d'eau maximal (m)", 'rgba(255, 65, 54, 0.5)'), row=1, col=4)
 
     fig.update_layout(
         title='Distribution des dimensions des navires',
@@ -38,9 +41,9 @@ def trace_boxplot():
 
 def update_traces_boxplot(df, fig, region, harbour):
     if (harbour != None):
-        data = df[df['Departure Hardour'] == harbour]
+        data = df[df['Departure Hardour'] == harbour].drop_duplicates(subset = ["Id"])
     elif (region != None):
-        data = df[df['Departure Region'] == region]
+        data = df[df['Departure Region'] == region].drop_duplicates(subset = ["Id"])
     else: 
         data = df
 

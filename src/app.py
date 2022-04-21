@@ -31,7 +31,7 @@ import linechart
 
 import pickle
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, prevent_initial_callbacks=True)
 app.title = 'Projet Xperts Solutions'
 
 #Hardcoded input
@@ -53,6 +53,7 @@ sankey_data = preprocess.get_sankey_data(data, port_central)
 # sankey_data = pickle.load(open("sankey-data.p", "rb"))
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
 # bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
+boxplot_data = data.drop_duplicates(subset = ["Id"])
 
 
 #figures
@@ -65,7 +66,7 @@ fig_bar = map_viz.get_barchart(barchart_data,100)
 
 fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
-fig_boxplot = boxplot.trace_boxplot()
+fig_boxplot = boxplot.trace_boxplot(boxplot_data)
 
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
 
@@ -251,7 +252,7 @@ def update_viz(selection_data):
     
     if selection_data["type"] == "All":
 
-        fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, None)
+        fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)
 
         fig__linechart = linechart.get_linechart(linechart_data)
 
