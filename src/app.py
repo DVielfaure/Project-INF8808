@@ -13,7 +13,6 @@ import dash_html_components as html
 import dash_core_components as dcc
 
 from dash.dependencies import Input, Output, State
-#from matplotlib.pyplot import bar, figure
 from dash.exceptions import PreventUpdate
 
 import plotly.graph_objects as go
@@ -45,8 +44,8 @@ pickle.dump(data, open("data.p", "wb"))
 
 #print("first data", time.time() - start)
 
-map_data_departure = preprocess.get_map_data(data,"Departure")
-barchart_data = preprocess.get_barchart_data(map_data_departure,"Departure")
+map_data_departure = preprocess.get_map_data(data)
+barchart_data = preprocess.get_barchart_data(map_data_departure)
 linechart_data = preprocess.get_linechart_data(data)
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
 sankey_data = preprocess.get_sankey_data(data, port_central)
@@ -397,7 +396,7 @@ def update_barchart(region_dropdown,slider_value):
     if region_dropdown != None:
 
         filtered_data = barchart_data[barchart_data["Departure Region"]==region_dropdown]
-        fig = map_viz.get_barchart(filtered_data,"Departure",lim=int(10**slider_value))
+        fig = map_viz.get_barchart(filtered_data,lim=int(10**slider_value))
 
         style={'height':max(25*(len(fig.data[0]['y'])),200)}
 
@@ -406,7 +405,7 @@ def update_barchart(region_dropdown,slider_value):
     #pas de région de sélectionnée, filtre selon les ports affichés
     else:
 
-        fig = map_viz.get_barchart(barchart_data,"Departure",lim=int(10**slider_value))
+        fig = map_viz.get_barchart(barchart_data,lim=int(10**slider_value))
 
         style={'height':max(25*(len(fig.data[0]['y'])),200)}
 

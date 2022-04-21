@@ -122,7 +122,7 @@ def traffic_per_time(df, scale="year"):
     return df_traffic
 
 
-def get_map_data_extended(data,type):
+def get_map_data_extended(data):
     '''
         Converts the data to a pandas dataframe.
 
@@ -132,9 +132,9 @@ def get_map_data_extended(data,type):
             my_df: The corresponding dataframe
     '''
     # Sélectionne quelques colonnes
-    df = data[["Id",type+" Hardour",type+" Latitude",type+" Longitude", type+" Region"]]
+    df = data[["Id","Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
-    df = df.groupby([type+" Hardour",type+" Latitude",type+" Longitude", type+" Region"]).count()
+    df = df.groupby(["Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]).count()
     #return dataframe
     df = df.reset_index()
     df.columns = ['Trafic' if x=='Id' else x for x in df.columns]
@@ -142,7 +142,7 @@ def get_map_data_extended(data,type):
     return df
 
 
-def get_map_data(data,type):
+def get_map_data(data):
     '''
         Converts the data to a pandas dataframe.
 
@@ -152,11 +152,11 @@ def get_map_data(data,type):
             my_df: The corresponding dataframe
     '''
     # Sélectionne quelques colonnes
-    df = data[["Id",type+" Hardour",type+" Latitude",type+" Longitude", type+" Region"]]
+    df = data[["Id","Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
-    df = df.groupby([type+" Hardour", type+" Region"]).agg(
-        {type+" Latitude":'mean',
-        type+" Longitude":'mean',
+    df = df.groupby(["Departure Hardour", "Departure Region"]).agg(
+        {"Departure Latitude":'mean',
+        "Departure Longitude":'mean',
         "Id": 'count'}
     )
     #return dataframe
@@ -169,7 +169,7 @@ def get_map_data(data,type):
 #map_data[map_data["Departure Hardour"].str.contains("Virtual")]
 
 
-def get_barchart_data(data,type):
+def get_barchart_data(data):
     '''
         Converts the data to a pandas dataframe.
         Args:
@@ -178,11 +178,11 @@ def get_barchart_data(data,type):
             my_df: The corresponding dataframe
     '''
     #même données que pour la map sans les géo positions
-    # df = get_map_data(data,type)
+    # df = get_map_data(data)
 
-    # df = df[[type+" Hardour", type+" Region","Trafic"]]
+    # df = df[["Departure Hardour", "Departure Region","Trafic"]]
 
-    return data[[type+" Hardour", type+" Region","Trafic"]]
+    return data[["Departure Hardour", "Departure Region","Trafic"]]
 
 
 def get_sankey_data(dataframe, port_central):

@@ -9,10 +9,10 @@ def trace_bar_chart(df, port):
          y="Traffic", 
          color="Vessel Type", 
          hover_data=['Traffic', 'Vessel Type'],
-         title="Evolution du traffic du port", 
+         title="Evolution du traffic", 
     )
     fig.update_layout(
-        title_text="Evolution du traffic du port " + port,
+        title_text="Evolution du traffic",
         title_x=0.5,
         margin=dict(l=14, r=14, t=32, b=14, pad=0),
     )

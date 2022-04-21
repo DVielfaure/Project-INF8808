@@ -58,7 +58,7 @@ def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.785
 
 
 
-def get_barchart(data,type,lim=0):
+def get_barchart(data,lim=0):
 
     data_graph = data[data["Trafic"]>lim]
     data_graph = data_graph.sort_values("Trafic", ascending=True)
