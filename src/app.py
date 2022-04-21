@@ -59,7 +59,7 @@ boxplot_data = data.drop_duplicates(subset = ["Id"])
 
 zoom_init = {'geo.projection.rotation.lon': -92.46259526553834, 'geo.center.lon': -92.46259526553834, 'geo.center.lat': 54.75637743691583, 'geo.projection.scale':3.4822022531844983}
 
-fig_map = map_viz.get_map(map_data_departure,100)
+fig_map = map_viz.get_map(map_data_departure)
 
 fig_bar = map_viz.get_barchart(barchart_data,100)
 
@@ -111,9 +111,11 @@ html.Div([
                 
             ], className="d-flex"),
 
+
             html.Div([dcc.Graph(
                 id="barchart",
                 figure= fig_bar,
+                style={'height':max(25*(len(fig_bar.data[0]['y'])),200)}
             )], className="trafic-port"),
 
             dcc.Graph(
