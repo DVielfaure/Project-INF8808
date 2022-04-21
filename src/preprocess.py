@@ -246,6 +246,7 @@ def get_bar_traffic_data(df, time_scale, spatial_scale, place):
 
 def get_linechart_data(data):
 
+
     df = traffic_per_time(data, scale="day")
     df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
 
@@ -255,4 +256,7 @@ def get_linechart_data(data):
 
     df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
     
+    #retrait des 29 février
+    df = df[df['month-day'] != "0000-02-29"]
+
     return df
