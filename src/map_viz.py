@@ -10,7 +10,7 @@ import plotly.express as px
 
 
 
-def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
+def get_map(data,lim=0,last_zoom=None,prev_scale=None, lat=48, lon=-100, zoom=1.5):
     """
     Create the map figure on "Arrival" or "Departure" trafic.
 
@@ -29,9 +29,9 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
     #création de la figure "Departure" or "Arrival"
     fig = px.scatter_mapbox(
         data,
-        lat=type+" Latitude",
-        lon=type+" Longitude",
-        text= type+" Hardour",
+        lat="Departure Latitude",
+        lon="Departure Longitude",
+        text= "Departure Hardour",
         color=data["Trafic"]
     )
 
@@ -82,9 +82,11 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
         mapbox_style="open-street-map",
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         mapbox_center=go.layout.mapbox.Center(
-            lat=48,
-            lon=-100
+            lat=lat,
+            lon=lon
         ),
+        mapbox_zoom = zoom,
+        uirevision = 'something'
     )
 
        
@@ -104,7 +106,7 @@ def get_barchart(data,type,lim=0):
     fig = go.Figure(
         data=[go.Bar(
             x=data_graph["Trafic"],
-            y= data_graph[type+" Hardour"],
+            y= data_graph["Departure Hardour"],
             orientation="h",
             #width=5,
             base="overlay",
@@ -128,9 +130,3 @@ def get_barchart(data,type,lim=0):
 
 
     return fig
-
-"""
-
- fig = px.bar(data,y=type+" Hardour",x="Trafic",orientation="h")
-
-"""

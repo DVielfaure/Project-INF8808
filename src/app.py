@@ -43,7 +43,7 @@ data = preprocess.create_dataframe_from_csv()
 # pickle.dump(data, open("data.p", "wb"))
 # data = pickle.load(open("data.p", "rb"))
 
-print("first data", time.time() - start)
+#print("first data", time.time() - start)
 
 map_data_departure = preprocess.get_map_data(data,"Departure")
 barchart_data = preprocess.get_barchart_data(map_data_departure,"Departure")
@@ -59,10 +59,9 @@ bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spat
 
 zoom_init = {'geo.projection.rotation.lon': -92.46259526553834, 'geo.center.lon': -92.46259526553834, 'geo.center.lat': 54.75637743691583, 'geo.projection.scale':3.4822022531844983}
 
-fig_departure = map_viz.get_map(map_data_departure,"Departure",100,last_zoom=zoom_init,prev_scale=None)
-#fig_arrival = map_viz.get_map(map_data_arrival,"Arrival",0,last_zoom=None,prev_scale=None)
+fig_map = map_viz.get_map(map_data_departure,100)
 
-fig_bar = map_viz.get_barchart(barchart_data,"Departure",100)
+fig_bar = map_viz.get_barchart(barchart_data,100)
 
 fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
@@ -118,7 +117,7 @@ html.Div([
             )], className="trafic-port"),
 
             dcc.Graph(
-                figure=fig_departure,
+                figure=fig_map,
                 id='map_departure',
                 style={'height':'fit-content','width' : '100%'}
             ),
@@ -136,7 +135,6 @@ html.Div([
                 id='slider_updatemode',
                 marks={i: '{}'.format(10 ** i) for i in range(5)},
                 value=2,
-                updatemode='drag',
                 verticalHeight=32,
             ),
 
@@ -171,7 +169,7 @@ html.Div([
 ##### CALLBACKS #####
 
 
-#update selection et data
+#update selection 
 @app.callback(Output('selection_data','data'),
              [Input('slider_updatemode', 'value'),
               Input('region_dropdown','value'),
@@ -229,7 +227,8 @@ def affichage_selection(selection_data):
             Output('linechart','figure')],
             [Input('selection_data','data')])
 def update_viz(selection_data):
-
+    print(selection_data["slider"])
+    
     if selection_data["type"] == "Region":
         
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
@@ -276,17 +275,54 @@ def update_zoom(relayoutData):
         return zoom_init['geo.projection.scale']
 
 
-zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, 'geo.center.lon': -85.70231819775765, 'geo.center.lat': 44.96680548384988,'geo.projection.scale':24.25146506416641} , 
-        'Newfoundland Region':{'geo.projection.rotation.lon': -54.85859988413813, 'geo.center.lon': -54.85859988413813, 'geo.center.lat': 51.81629585581253,'geo.projection.scale':10.556063286183166},
-       'East Canadian Water Region': {'geo.projection.rotation.lon': -95.13396524228548, 'geo.center.lon': -95.13396524228548, 'geo.center.lat': 73.25566470759851,'geo.projection.scale': 4.000000000000003}, 
-       'Maritimes Region': {'geo.projection.rotation.lon': -63.1261460700024, 'geo.center.lon': -63.1261460700024, 'geo.center.lat': 44.8202886873768,'geo.projection.scale': 32.00000000000006},
-       'St. Lawrence Seaway Region': {'geo.projection.rotation.lon': -77.30560743930843, 'geo.center.lon': -77.30560743930843, 'geo.center.lat': 44.01540087191435, 'geo.projection.scale': 36.75834735990517}, 
-       'Quebec Region': {'geo.projection.rotation.lon': -65.68478238605977, 'geo.center.lon': -65.68478238605977, 'geo.center.lat': 48.94642841990159,'geo.projection.scale': 21.112126572366343}, 
-       'Pacific Region': {'geo.projection.rotation.lon': -127.36955114924267, 'geo.center.lon': -127.36955114924267, 'geo.center.lat': 51.378282668463775,'geo.projection.scale': 27.857618025476015},
-       'West Canadian Water Region': {'geo.projection.rotation.lon': -95.13396524228548, 'geo.center.lon': -95.13396524228548, 'geo.center.lat': 73.25566470759851,'geo.projection.scale': 4.000000000000003}, 
-       'Arctic Region': {'geo.projection.rotation.lon': -95.13396524228548, 'geo.center.lon': -95.13396524228548, 'geo.center.lat': 73.25566470759851,'geo.projection.scale': 4.000000000000003}
-       }
 
+zooms = {
+    'Central Region': {
+        'lon': -85.70231819775765, 
+        'lat': 44.96680548384988, 
+        'scale':24.25146506416641
+    }, 
+    'Newfoundland Region': {
+        'lon': -54.85859988413813, 
+        'lat': 51.81629585581253,
+        'scale':10.556063286183166
+    },
+    'East Canadian Water Region': {
+        'lon': -95.13396524228548, 
+        'lat': 73.25566470759851,
+        'scale': 4.000000000000003
+    }, 
+    'Maritimes Region': {
+        'lon': -63.1261460700024, 
+        'lat': 44.8202886873768,
+        'scale': 32.00000000000006
+    },
+    'St. Lawrence Seaway Region': {
+        'lon': -77.30560743930843, 
+        'lat': 44.01540087191435, 
+        'scale': 36.75834735990517
+    }, 
+    'Quebec Region': {
+        'lon': -65.68478238605977, 
+        'lat': 48.94642841990159,
+        'scale': 21.112126572366343
+    }, 
+    'Pacific Region': {
+        'lon': -127.36955114924267, 
+        'lat': 51.378282668463775,
+        'scale': 27.857618025476015
+    },
+    'West Canadian Water Region': {
+        'lon': -95.13396524228548, 
+        'lat': 73.25566470759851,
+        'scale': 4.000000000000003
+    }, 
+    'Arctic Region': {
+        'lon': -95.13396524228548, 
+        'lat': 73.25566470759851,
+        'scale': 4.000000000000003
+    }
+}
        
 
 @app.callback([Output('slider_limit_text', 'children'),
@@ -299,59 +335,85 @@ zooms = {'Central Region': {'geo.projection.rotation.lon': -85.70231819775765, '
                 State('map_departure','figure')])
 def update_map(slider_value,region_dropdown, harbour_dropdown,relayoutData,prev_zoom,figure):
     
+    print("on est dans update_map")
+
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-    #si le slider est utilisé
-    if input_id == "slider_updatemode":
-        print("update map",relayoutData)
-        #évite que le zoom inital ne se perde au chargement
-            #si pas de région de sélectionnée, on update la map avec les ports au dessus de la limite et le même zoom
-        if relayoutData != None and region_dropdown == None:
-            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),relayoutData,prev_zoom)
-            #si il y a une région de sélectionnée, on update la map avec les ports au dessus de la limite et le zoom de la région
-        elif relayoutData != None and region_dropdown != None:
-            fig = map_viz.get_map(map_data_departure,"Departure",int(10**slider_value),zooms[region_dropdown],prev_zoom)
-        else : #cas où relayoutData= None, à l'initialisation par exemple
-            fig = figure
-        return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), fig
     
+    print(input_id)
+    
+    # #si le slider est utilisé
+    # if input_id == "slider_updatemode":
+    #     print("update map",relayoutData)
+    #     #évite que le zoom inital ne se perde au chargement
+    #         #si pas de région de sélectionnée, on update la map avec les ports au dessus de la limite et le même zoom
+    #     if relayoutData != None and region_dropdown == None:
+    #         fig = map_viz.get_map(map_data_departure,int(10**slider_value),relayoutData,prev_zoom)
+    #         #si il y a une région de sélectionnée, on update la map avec les ports au dessus de la limite et le zoom de la région
+    #     elif relayoutData != None and region_dropdown != None:
+    #         fig = map_viz.get_map(map_data_departure,int(10**slider_value),zooms[region_dropdown],prev_zoom)
+    #     else : #cas où relayoutData= None, à l'initialisation par exemple
+    #         fig = map_viz.get_map(map_data_departure, int(10**slider_value))
+    #     return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), fig
+    
+
+    if input_id == "slider_updatemode":
+
+        if harbour_dropdown != None: 
+            harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
+
+            lat = harbour_data.iloc[0]["Departure Latitude"]
+            lon = harbour_data.iloc[0]["Departure Longitude"]
+
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value),lat=lat, lon= lon, zoom=7)
+        
+        elif region_dropdown != None and harbour_dropdown == None :
+            zoom = zooms[region_dropdown]
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), lat=zoom["lat"], lon= zoom['lon'],zoom = 3)
+        
+        elif region_dropdown == None and harbour_dropdown == None :
+
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
+        
+        return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
+
+
     #si une region est sélectionnée
     if input_id == "region_dropdown":
         print("region_dropdown")
         if region_dropdown != None:
             zoom = zooms[region_dropdown]
-            figure = go.Figure(figure)
-            #on ajuste la figure avec le zoom sur la région
-            figure.update_geos(
-                projection_rotation_lon= zoom['geo.projection.rotation.lon'],
-                center_lon= zoom['geo.center.lon'],
-                center_lat= zoom['geo.center.lat'],
-                projection_scale= zoom['geo.projection.scale']
-                )
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), lat=zoom["lat"], lon= zoom['lon'],zoom = 3)
             return dash.no_update, figure
 
         else:
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
+
             return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
    
     #si un port est sélectionné
     ##centre la carte sur le port sélectionné + TODO mise en couleur/augmentation taille
     if input_id == "harbour_dropdown":
         print("update zoom port")
-        harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
+        if harbour_dropdown != None:
 
-        figure = map_viz.get_map(map_data_departure,"Departure",min(harbour_data["Trafic"].values[0],int(10**slider_value)),None,None)
-        #upadte du zoom centré sur les lat et lon du port
-        figure.update_geos(
-                #projection_rotation_lon= zoom['geo.projection.rotation.lon'],
-                center_lon= harbour_data["Departure Longitude"].values[0],
-                center_lat= harbour_data["Departure Latitude"].values[0],
-                projection_scale= 60
-                )
+            harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
+
+            lat = harbour_data.iloc[0]["Departure Latitude"]
+            lon = harbour_data.iloc[0]["Departure Longitude"]
+
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value),lat=lat, lon= lon, zoom=7)
+
+        else: 
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), zoom = 7)
+
         return dash.no_update, figure
 
-    else:
-        return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
+    # else:
+
+    #     figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), zoom = 7)
+
+    #     return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
 
 
 #filtre du bar chart sur les ports de la région sélectionnée
