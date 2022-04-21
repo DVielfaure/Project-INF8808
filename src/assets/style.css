@@ -55,7 +55,7 @@ html, body, #react-entry-point, .content {
 .trafic-port {
     flex: 1 1 auto;
     overflow-y: auto;
-    height: 0px;
+    height: 200px;
 }
 
 .map {
