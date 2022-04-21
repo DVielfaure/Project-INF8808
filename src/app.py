@@ -123,7 +123,7 @@ html.Div([
             ),
             
             html.H4(
-                "Ports", 
+                "Ports avec plus de 1 bateaux en trafic", 
                 id='slider_limit_text',
                 className="m-1 center"
             ),
@@ -134,7 +134,7 @@ html.Div([
                 step=0.01,
                 id='slider_updatemode',
                 marks={i: '{}'.format(10 ** i) for i in range(5)},
-                value=2,
+                value=0,
                 verticalHeight=32,
             ),
 
@@ -187,7 +187,7 @@ def update_selection(slider_value, region_value, harbour_value,selection):
         if input_id == "harbour_dropdown":
             selection["type"] = "Harbour"
             selection["value"] = harbour_value
-            selection["slider"] = 100
+            selection["slider"] = 0
 
         #si region sélectionnée
         if input_id == "region_dropdown":
@@ -212,7 +212,7 @@ def affichage_selection(selection_data):
         return "Ports de la region:  "+ selection_data["value"]
 
     if selection_data["type"] == "Harbour":
-        port_central = selection_data["value"]
+        
         return "Port "+  selection_data["value"].casefold().title()
     
     if selection_data["type"] == "All":
@@ -321,6 +321,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,figure):
     # print("on est dans update_map")
     # print("center =",figure["layout"]["mapbox"]["center"])
     print("zoom =",figure["layout"]["mapbox"]["zoom"])
+
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
       
