@@ -10,71 +10,32 @@ import plotly.express as px
 
 
 
-def get_map(data,lim=0,last_zoom=None,prev_scale=None, lat=48, lon=-100, zoom=1.5):
+def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.7852661802888283):
     """
-    Create the map figure on "Arrival" or "Departure" trafic.
+    Create the map figure Departure trafic.
 
         Args:
             data: data of harbour trafic filter on "Arrival" or "Departure"
-            type: "Arrival" or "Departure" trafic to show
             lim: minimal number of trafic for each harbour to be shown
-            last_zoom: parameter data on last zoom apply to the map, we apply it on uptaded figure so the map is not reset on every updates
+            
         Returns:
             fig: The updated figure 
     
     """
     #filtre des données sur la limite de trafic
     data = data[data["Trafic"]>=lim]
-
+    
     #création de la figure "Departure" or "Arrival"
     fig = px.scatter_mapbox(
         data,
         lat="Departure Latitude",
         lon="Departure Longitude",
         text= "Departure Hardour",
+        #color=data["Departure Region"]
         color=data["Trafic"]
     )
 
     fig.update_coloraxes(showscale=False)
-
-
-    #conservation des paramètres de zoom précédent 
-    # TODO: reste à conserver la taille de la carte, comment la fixer ?
-    #https://dash.gallery/dash-uber-rides-demo/
-
-    if last_zoom != None:
-        keys = last_zoom.keys()
-        if 'geo.projection.rotation.lon' in keys:
-            fig.update_geos(
-                projection_rotation_lon = float(last_zoom['geo.projection.rotation.lon'])
-            )
-        if 'geo.projection.rotation.lat' in keys:
-            fig.update_geos(
-                projection_rotation_lat = float(last_zoom['geo.projection.rotation.lat'])
-            )
-        if 'geo.projection.rotation.roll' in keys:
-            fig.update_geos(
-                projection_rotation_roll = float(last_zoom['geo.projection.rotation.roll'])
-            )
-        if 'geo.projection.scale' in keys:
-            fig.update_geos(
-                projection_scale = float(last_zoom['geo.projection.scale'])
-            )
-        else:
-            if prev_scale != None:
-                fig.update_geos(
-                    projection_scale = float(prev_scale)
-            )
-
-        if 'geo.center.lon' in keys:
-            fig.update_geos(
-                center_lon = float(last_zoom['geo.center.lon'])
-            )
-        if 'geo.center.lat' in keys:
-            fig.update_geos(
-                center_lat = float(last_zoom['geo.center.lat'])
-            )
-                 
 
     fig.update_traces(marker=dict(size=9))
 
@@ -86,10 +47,9 @@ def get_map(data,lim=0,last_zoom=None,prev_scale=None, lat=48, lon=-100, zoom=1.
             lon=lon
         ),
         mapbox_zoom = zoom,
-        uirevision = 'something'
+        uirevision = 'something',
+        showlegend=False
     )
-
-       
             
     #faire en sorte qu'il n'y ait pas de superposition de points
 
