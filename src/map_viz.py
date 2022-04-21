@@ -27,28 +27,16 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
     data = data[data["Trafic"]>=lim]
 
     #création de la figure "Departure" or "Arrival"
-    fig = px.scatter_geo(data, lat=type+" Latitude", lon=type+" Longitude",text= type+" Hardour", 
-  color=data["Trafic"])
-
-    
-    fig.update_geos(
-        resolution=50,
-        showcoastlines=True, coastlinecolor="RebeccaPurple",
-        showland=True, 
-        showocean=True, oceancolor="LightBlue",
-        showlakes=True, lakecolor="LightBlue",
-        showrivers=True,
-        showcountries=True, countrycolor="Black",
-        showsubunits=True, subunitcolor="Grey",
-        #center=dict(lon=-100, lat=48),
-        projection_type="mercator"
-        #lataxis_range=[50,85], lonaxis_range=[-60, -40]
-        #,fitbounds="locations"
-        #,framewidth=12
+    fig = px.scatter_mapbox(
+        data,
+        lat=type+" Latitude",
+        lon=type+" Longitude",
+        text= type+" Hardour",
+        color=data["Trafic"]
     )
-#https://plotly.com/python/reference/layout/geo/#layout-geo-uirevision
+
     fig.update_coloraxes(showscale=False)
-  
+
 
     #conservation des paramètres de zoom précédent 
     # TODO: reste à conserver la taille de la carte, comment la fixer ?
@@ -91,14 +79,12 @@ def get_map(data,type,lim=0,last_zoom=None,prev_scale=None):
     fig.update_traces(marker=dict(size=9))
 
     fig.update_layout(
-        # width=1000,
-        # height=500,
-        margin={"r": 0, "t": 0, "l": 0, "b": 0, "pad":0 , "autoexpand":True},
-        # autosize=False,
+        mapbox_style="open-street-map",
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
         mapbox_center=go.layout.mapbox.Center(
-        lat=48,
-        lon=-100),
-        #min_zoom=1.3
+            lat=48,
+            lon=-100
+        ),
     )
 
        
@@ -129,7 +115,8 @@ def get_barchart(data,type,lim=0):
 
     fig.update_layout(
         bargap=0.5,
-        width=300,#height=400,
+        # width=300,
+        #height=400,
         margin={"r": 0, "t": 20, "l": 200, "b": 0, "pad":4 , "autoexpand":True},
 
         xaxis_anchor="free",
