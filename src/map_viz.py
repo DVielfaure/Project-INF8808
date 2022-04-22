@@ -70,6 +70,7 @@ def get_barchart(data,lim=0):
             orientation="h",
             #width=5,
             base="overlay",
+            marker_color = "rgb(13,8,135)"
             
 
             )]
@@ -84,7 +85,8 @@ def get_barchart(data,lim=0):
         xaxis_anchor="free",
         xaxis_position=1,
         yaxis_automargin=True,
-        xaxis_autorange=True
+        xaxis_autorange=True,
+        
     
     )
 
