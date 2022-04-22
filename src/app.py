@@ -36,9 +36,8 @@ app.title = 'Projet Xperts Solutions'
 #Read csv and create dataframe
 # start = time.time()
 data = preprocess.create_dataframe_from_csv()
-pickle.dump(data, open("data.p", "wb"))
+# pickle.dump(data, open("data.p", "wb"))
 # data = pickle.load(open("data.p", "rb"))
-data = data.drop_duplicates(subset = ["Id"])
 
 map_data_departure = preprocess.get_map_data(data)
 barchart_data = preprocess.get_barchart_data(map_data_departure)
