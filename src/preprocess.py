@@ -154,7 +154,6 @@ def get_map_data(data):
         Returns:
             my_df: The corresponding dataframe
     '''
-    print(data.columns)
     # Sélectionne quelques colonnes
     df = data[["Id","Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
@@ -189,7 +188,7 @@ def get_barchart_data(data):
     return data[["Departure Harbour", "Departure Region","Trafic"]]
 
 
-def get_sankey_data(dataframe, port_central):
+def get_sankey_data(dataframe, type, value):
     '''
         Creates pandas dataframes ofr arrival and departure harbours.
         Args:
@@ -200,14 +199,14 @@ def get_sankey_data(dataframe, port_central):
     '''
     
     #Drop unnecessary columns
-    df_sankey = dataframe.copy()
-    df_sankey = df_sankey.drop(['Id', 'Departure Date', 'Lenght', 'Width',
+    dataframe = dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
                     'Departure Latitude', 'Departure Longitude',
                     'Arrival Longitude', 'Arrival Latitude',
                     'Vessel Type', 'DeadWeight Tonnage',
-                    'Maximum Draugth', 'Arrival Date'], axis=1)
-    
-    if port_central == "Ports du Canada":
+                    'Maximum Draugth', 'Arrival Date', "Date"], axis=1)
+    df_sankey = dataframe.copy()
+        
+    if type == "All":
         df_departure = df_sankey.loc[dataframe['Departure Harbour'].str.contains("Virtual Harbour", case=False)]
         df_arrival = df_sankey.loc[dataframe['Arrival Harbour'].str.contains("Virtual Harbour", case=False)]
         
@@ -222,20 +221,132 @@ def get_sankey_data(dataframe, port_central):
         df_departure = pd.Series(data=d_departure, index=['International', 'Intra-Canada'])
         df_arrival = pd.Series(data=d_arrival, index=['International', 'Intra-Canada'])
  
-        #Returns the two dataframes
-        return df_departure, df_arrival
+        #Converts dataframes to lists
+        list_departure_harbours = df_departure.index.tolist()
+        list_arrival_harbours = df_arrival.index.tolist()
+        list_departure_counts = df_departure.tolist()
+        list_arrival_counts = df_arrival.tolist()
         
-    else:
+        #Get index of central node
+        central_node_index = len(list_arrival_harbours) 
+        
+        #Concatenate lists for sankey
+        label = []
+        label.extend(list_arrival_harbours)
+        label.append(value)
+        label.extend(list_departure_harbours)
+        
+        sankey_values=[]
+        sankey_values.extend(list_arrival_counts)
+        sankey_values.extend(list_departure_counts)
+        
+        #Returns the two lists
+        return label, sankey_values, central_node_index
+        
+    elif type == "Region":
+        #Filter with the right central Region
+        df_departure = df_sankey.loc[dataframe['Arrival Region'] == value]
+        df_arrival = df_sankey.loc[dataframe['Departure Region'] == value]
+        
+        #Count number of occurences
+        df_departure = df_departure['Departure Region'].value_counts()
+        df_arrival = df_arrival['Arrival Region'].value_counts()
+        
+        #Converts dataframes to lists
+        list_departure_harbours = df_departure.index.tolist()
+        list_arrival_harbours = df_arrival.index.tolist()
+        list_departure_counts = df_departure.tolist()
+        list_arrival_counts = df_arrival.tolist()
+        
+        #Count others
+        departure_other_count = 0
+        for n1 in list_departure_counts[5:]:
+            departure_other_count += n1
+            
+        arrival_other_count = 0
+        for n2 in list_arrival_counts[5:]:
+            arrival_other_count += n2
+            
+        #Keep only top 5
+        list_departure_harbours = df_departure.index.tolist()[0:5]
+        list_arrival_harbours = df_arrival.index.tolist()[0:5]
+        list_departure_counts = df_departure.tolist()[0:5]
+        list_arrival_counts = df_arrival.tolist()[0:5]
+        
+        #Append others to list
+        list_departure_harbours.append("Others")
+        list_arrival_harbours.append("Others")
+        list_departure_counts.append(departure_other_count)
+        list_arrival_counts.append(arrival_other_count)
+        
+        #Get index of central node
+        central_node_index = len(list_arrival_harbours) 
+        
+        #Concatenate lists for sankey
+        label = []
+        label.extend(list_arrival_harbours)
+        label.append(value)
+        label.extend(list_departure_harbours)
+        
+        sankey_values=[]
+        sankey_values.extend(list_arrival_counts)
+        sankey_values.extend(list_departure_counts)
+        
+        #Returns the two lists
+        return label, sankey_values, central_node_index
+        
+    
+    elif type == "Harbour":
         #Filter with the right central harbour
-        df_departure = df_sankey.loc[dataframe['Arrival Harbour'] == port_central]
-        df_arrival = df_sankey.loc[dataframe['Departure Harbour'] == port_central]
+        df_departure = df_sankey.loc[dataframe['Arrival Harbour'] == value]
+        df_arrival = df_sankey.loc[dataframe['Departure Harbour'] == value]
 
         #Count number of occurences
         df_departure = df_departure['Departure Harbour'].value_counts()
         df_arrival = df_arrival['Arrival Harbour'].value_counts()
         
-        #Returns the two dataframes
-        return df_departure, df_arrival
+        #Converts dataframes to lists
+        list_departure_harbours = df_departure.index.tolist()
+        list_arrival_harbours = df_arrival.index.tolist()
+        list_departure_counts = df_departure.tolist()
+        list_arrival_counts = df_arrival.tolist()
+        
+        #Count others
+        departure_other_count = 0
+        for n1 in list_departure_counts[5:]:
+            departure_other_count += n1
+            
+        arrival_other_count = 0
+        for n2 in list_arrival_counts[5:]:
+            arrival_other_count += n2
+            
+        #Keep only top 5
+        list_departure_harbours = df_departure.index.tolist()[0:5]
+        list_arrival_harbours = df_arrival.index.tolist()[0:5]
+        list_departure_counts = df_departure.tolist()[0:5]
+        list_arrival_counts = df_arrival.tolist()[0:5]
+        
+        #Append others to list
+        list_departure_harbours.append("Others")
+        list_arrival_harbours.append("Others")
+        list_departure_counts.append(departure_other_count)
+        list_arrival_counts.append(arrival_other_count)
+        
+        #Get index of central node
+        central_node_index = len(list_arrival_harbours) 
+        
+        #Concatenate lists for sankey
+        label = []
+        label.extend(list_arrival_harbours)
+        label.append(value)
+        label.extend(list_departure_harbours)
+        
+        sankey_values=[]
+        sankey_values.extend(list_arrival_counts)
+        sankey_values.extend(list_departure_counts)
+        
+        #Returns the two lists
+        return label, sankey_values, central_node_index
 
 def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = df.copy()

@@ -33,22 +33,18 @@ import pickle
 app = dash.Dash(__name__, prevent_initial_callbacks=True)
 app.title = 'Projet Xperts Solutions'
 
-#Hardcoded input
-port_central = "Ports du Canada" #"St. John's"
-
 #Read csv and create dataframe
 # start = time.time()
 data = preprocess.create_dataframe_from_csv()
 pickle.dump(data, open("data.p", "wb"))
 # data = pickle.load(open("data.p", "rb"))
-
-#print("first data", time.time() - start)
+data = data.drop_duplicates(subset = ["Id"])
 
 map_data_departure = preprocess.get_map_data(data)
 barchart_data = preprocess.get_barchart_data(map_data_departure)
 linechart_data = preprocess.get_linechart_data(data, type="Harbour")
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
-sankey_data = preprocess.get_sankey_data(data, port_central)
+sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
 # sankey_data = pickle.load(open("sankey-data.p", "rb"))
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
 # bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
@@ -56,7 +52,6 @@ boxplot_data = data.drop_duplicates(subset = ["Id"])
 
 
 #figures
-
 fig_map = map_viz.get_map(map_data_departure)
 
 fig_bar = map_viz.get_barchart(barchart_data,100)
@@ -65,7 +60,7 @@ fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
 
 fig_boxplot = boxplot.trace_boxplot(boxplot_data)
 
-fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
+fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], sankey_data[2])
 
 fig_linechart = linechart.get_linechart(linechart_data, type= "All")
 
@@ -243,18 +238,21 @@ def update_viz(selection_data):
     if selection_data["type"] == "Region":
         
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
+        
+        sankey_data = preprocess.get_sankey_data(data, type= "Region", value=selection_data["value"])
+        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
 
         linechart_data = preprocess.get_linechart_data(data,type= "Region")
         fig__linechart = linechart.get_linechart(linechart_data, type= "Region",value=selection_data["value"])
 
-        return fig__boxplot, dash.no_update, dash.no_update, fig__linechart
+        return fig__boxplot, fig__sankey, dash.no_update, fig__linechart
 
     if selection_data["type"] == "Harbour":
         
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, selection_data["value"])
 
-        sankey_data = preprocess.get_sankey_data(data,selection_data["value"])
-        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1],selection_data["value"])
+        sankey_data = preprocess.get_sankey_data(data, type= "Harbour",value=selection_data["value"])
+        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
 
         bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=selection_data["value"])
         fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
@@ -268,10 +266,13 @@ def update_viz(selection_data):
 
         fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)
 
+        sankey_data = preprocess.get_sankey_data(data, type= "All", value= "Ports du Canada")
+        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
+
         linechart_data = preprocess.get_linechart_data(data,type= "All")
         fig__linechart = linechart.get_linechart(linechart_data, type= "All")
        
-        return fig__boxplot, dash.no_update, dash.no_update, fig__linechart
+        return fig__boxplot, fig__sankey, dash.no_update, fig__linechart
 
 
 ### callback pour la map
@@ -334,9 +335,6 @@ zooms = {
               Input('harbour_dropdown','value')],
               [State('map_departure','figure')])
 def update_map(slider_value,region_dropdown, harbour_dropdown,figure):
-    
-    # print("on est dans update_map")
-    # print("center =",figure["layout"]["mapbox"]["center"])
     print("zoom =",figure["layout"]["mapbox"]["zoom"])
 
     ctx = dash.callback_context
