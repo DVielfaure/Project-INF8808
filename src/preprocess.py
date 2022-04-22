@@ -247,20 +247,61 @@ def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     return df_cop
 
 
+#pour le linechart
+def traffic_per_time_withRegion(df, scale="year"):
+    '''
+        Converts the date to datetime format.
 
-def get_linechart_data(data):
-
-
-    df = traffic_per_time(data, scale="day")
-    df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
-
-    df = df.reset_index().drop(["level_0", "index"], axis=1)
-
-    df = df.groupby(["Departure Harbour","month-day"]).sum().reset_index()
-
-    df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
+        Args:
+            df: The source df 
+        Returns:
+            df: The traffic dataframe group by year and harbour
+    '''
+    #convertion in datetime 
+    convert_datetime(df) 
     
-    #retrait des 29 février
-    df = df[df['month-day'] != "0000-02-29"]
+    if scale == "year":
+        df['Date']= (df['Departure Date']).dt.year
+
+        df_traffic = df.groupby(["Departure Region","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+    
+    if scale == "day":
+        df["Date"] = (df['Departure Date']).dt.date
+
+        df_traffic = df.groupby(["Departure Region","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+
+    #df_traffic = merge_topn(df_traffic)
+        
+    return df_traffic
+
+def get_linechart_data(data, type):
+
+    if type == "Harbour" or "All":
+        df = traffic_per_time(data, scale="day")
+        df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
+
+        df = df.reset_index().drop(["level_0", "index"], axis=1)
+
+        df = df.groupby(["Departure Harbour","month-day"]).sum().reset_index()
+
+        df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
+        
+
+
+        #retrait des 29 février
+        df = df[df['month-day'] != "0000-02-29"]
+
+    if type == "Region":
+
+        df = traffic_per_time_withRegion(data, scale="day")
+        df["month-day"]=df["Date"].apply(lambda x: x.strftime('%m-%d'))
+
+        df = df.groupby(["Departure Region","month-day"]).sum().reset_index()
+
+        df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
+
+        #retrait des 29 février
+        df = df[df['month-day'] != "0000-02-29"]
+
 
     return df

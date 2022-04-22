@@ -46,7 +46,7 @@ pickle.dump(data, open("data.p", "wb"))
 
 map_data_departure = preprocess.get_map_data(data)
 barchart_data = preprocess.get_barchart_data(map_data_departure)
-linechart_data = preprocess.get_linechart_data(data)
+linechart_data = preprocess.get_linechart_data(data, type="Harbour")
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
 sankey_data = preprocess.get_sankey_data(data, port_central)
 # sankey_data = pickle.load(open("sankey-data.p", "rb"))
@@ -67,7 +67,7 @@ fig_boxplot = boxplot.trace_boxplot(boxplot_data)
 
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], port_central)
 
-fig_linechart = linechart.get_linechart(linechart_data)
+fig_linechart = linechart.get_linechart(linechart_data, type= "All")
 
 
 def transform_value(value):
@@ -181,7 +181,7 @@ def update_selection(slider_value, region_value, harbour_value, clickData, selec
 
         print("update selection : ")
 
-        #clickData ne fonctionne pas 
+        #clickData ne fonctionne pas et je ne sais pas pourquoi
         #si on a cliqué sur un port sur le carte
         if input_id == "map_departure":
             print("clickData =",clickData)
@@ -244,7 +244,10 @@ def update_viz(selection_data):
         
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
 
-        return fig__boxplot, dash.no_update, dash.no_update, dash.no_update
+        linechart_data = preprocess.get_linechart_data(data,type= "Region")
+        fig__linechart = linechart.get_linechart(linechart_data, type= "Region",value=selection_data["value"])
+
+        return fig__boxplot, dash.no_update, dash.no_update, fig__linechart
 
     if selection_data["type"] == "Harbour":
         
@@ -256,7 +259,8 @@ def update_viz(selection_data):
         bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=selection_data["value"])
         fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
 
-        fig__linechart = linechart.get_linechart(linechart_data, selection_data["value"])
+        linechart_data = preprocess.get_linechart_data(data,type= "Harbour")
+        fig__linechart = linechart.get_linechart(linechart_data, type= "Harbour",value=selection_data["value"])
 
         return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
     
@@ -264,8 +268,9 @@ def update_viz(selection_data):
 
         fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)
 
-        fig__linechart = linechart.get_linechart(linechart_data)
-
+        linechart_data = preprocess.get_linechart_data(data,type= "All")
+        fig__linechart = linechart.get_linechart(linechart_data, type= "All")
+       
         return fig__boxplot, dash.no_update, dash.no_update, fig__linechart
 
 
