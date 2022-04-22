@@ -50,7 +50,6 @@ bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spat
 # bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
 boxplot_data = data.drop_duplicates(subset = ["Id"])
 
-
 #figures
 fig_map = map_viz.get_map(map_data_departure)
 
@@ -245,7 +244,10 @@ def update_viz(selection_data):
         linechart_data = preprocess.get_linechart_data(data,type= "Region")
         fig__linechart = linechart.get_linechart(linechart_data, type= "Region",value=selection_data["value"])
 
-        return fig__boxplot, fig__sankey, dash.no_update, fig__linechart
+        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="region", place=selection_data["value"])
+        fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
+
+        return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
 
     if selection_data["type"] == "Harbour":
         
@@ -258,7 +260,7 @@ def update_viz(selection_data):
         fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
 
         linechart_data = preprocess.get_linechart_data(data,type= "Harbour")
-        fig__linechart = linechart.get_linechart(linechart_data, type= "Harbour",value=selection_data["value"])
+        fig__linechart = linechart.get_linechart(linechart_data, type= "Harbour", value=selection_data["value"])
 
         return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
     

@@ -60,7 +60,7 @@ def correct_data(df):
     df[["Departure Date","Arrival Date"]] = df[["Departure Date","Arrival Date"]].where(df['Departure Date'] < df['Arrival Date'], df[["Arrival Date","Departure Date"]].values )
     return df
 
-def filter_df(df,scale,place):
+def filter_df(df, scale, place):
     '''
     Filter data on a specific scale: 
     example: filter on cleveland harbour:
@@ -69,10 +69,9 @@ def filter_df(df,scale,place):
     if scale == "all":
         df = df
     if scale == "region":
-        df = df[df["Departure Region"]== place ]
+        df = df[df["Departure Region"] == place ]
     if scale == "harbour":
-        df = df[df["Departure Harbour"]== place ]
-        
+        df = df[df["Departure Harbour"] == place ]
     return df
 
 
@@ -98,7 +97,7 @@ def merge_topn(df):
     return df_traffic_total
 
 
-def traffic_per_time(df, scale="year"):
+def traffic_per_time(df, scale="year", place_scale=""):
     '''
         Converts the date to datetime format.
 
@@ -121,6 +120,53 @@ def traffic_per_time(df, scale="year"):
         df_traffic = df.groupby(["Departure Harbour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
 
     df_traffic = merge_topn(df_traffic)
+        
+    return df_traffic
+
+def merge_topn_bar(df):
+    
+    #Create list of larger ship categories
+    df_traffic_topn = df.groupby(['Vessel Type']).sum()
+    df_traffic_topn = df_traffic_topn.nlargest(10,"Traffic").reset_index()
+    topn = df_traffic_topn["Vessel Type"].unique()
+
+    
+    #Separating df in top and bottom categories
+    df_traffic_top = df[df['Vessel Type'].isin(topn)]
+    df_traffic_bottom = df[~df['Vessel Type'].isin(topn)]
+
+    #Merging bottom
+    df_traffic_bottom = df_traffic_bottom.groupby(['Date']).sum().reset_index()
+    df_traffic_bottom["Vessel Type"] = "OTHERS"
+
+    #Merging top and bottom
+    df_traffic_total = pd.concat([df_traffic_top,df_traffic_bottom]).reset_index()
+
+    return df_traffic_total.sort_values(by="Traffic", ascending=False)
+
+def traffic_per_time_bar_traffic(df, scale="year", place_scale=""):
+    '''
+        Converts the date to datetime format.
+
+        Args:
+            df: The source df 
+        Returns:
+            df: The traffic dataframe group by year and harbour
+    '''
+    #convertion in datetime 
+    convert_datetime(df) 
+    
+    if scale == "year":
+        df['Date']= (df['Departure Date']).dt.year
+
+        df_traffic = df.groupby(["Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+    
+    if scale == "day":
+        df["Date"] = (df['Departure Date']).dt.date
+
+        df_traffic = df.groupby(["Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+
+    df_traffic = merge_topn_bar(df_traffic)
         
     return df_traffic
 
@@ -350,10 +396,11 @@ def get_sankey_data(dataframe, type, value):
 
 def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = df.copy()
-    df_cop = correct_data(df_cop)
+    # df_cop = correct_data(df_cop)
 
     df_cop = filter_df(df_cop, spatial_scale, place)
-    df_cop = traffic_per_time(df_cop, time_scale)
+    df_cop = traffic_per_time_bar_traffic(df_cop, time_scale, spatial_scale)
+
     df_cop = df_cop.drop(df_cop.columns[0], axis=1)
     return df_cop
 
