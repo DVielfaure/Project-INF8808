@@ -17,6 +17,7 @@ def boxplot(dataY, name, color):
         marker_opacity=0.2,
         line_width=1,
         boxmean=True,
+        hoverinfo="y"
     )
 
 
