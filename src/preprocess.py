@@ -33,6 +33,8 @@ def create_dataframe_from_csv():
 
     dataframe = reduce(lambda left,right: left.join(right), results)
     
+    dataframe = dataframe.rename(columns={'Departure Hardour':'Departure Harbour', 'Arrival Hardour':'Arrival Harbour' })
+
     return dataframe
 
 
@@ -69,7 +71,7 @@ def filter_df(df,scale,place):
     if scale == "region":
         df = df[df["Departure Region"]== place ]
     if scale == "harbour":
-        df = df[df["Departure Hardour"]== place ]
+        df = df[df["Departure Harbour"]== place ]
         
     return df
 
@@ -87,13 +89,14 @@ def merge_topn(df):
     df_traffic_bottom = df[~df['Vessel Type'].isin(topn)]
 
     #Merging bottom
-    df_traffic_bottom = df_traffic_bottom.groupby(['Date', "Departure Hardour"]).sum().reset_index()
+    df_traffic_bottom = df_traffic_bottom.groupby(['Date', "Departure Harbour"]).sum().reset_index()
     df_traffic_bottom["Vessel Type"] = "OTHERS"
 
     #Merging top and bottom
     df_traffic_total = pd.concat([df_traffic_top,df_traffic_bottom]).reset_index()
 
     return df_traffic_total
+
 
 def traffic_per_time(df, scale="year"):
     '''
@@ -110,12 +113,12 @@ def traffic_per_time(df, scale="year"):
     if scale == "year":
         df['Date']= (df['Departure Date']).dt.year
 
-        df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+        df_traffic = df.groupby(["Departure Harbour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
     
     if scale == "day":
         df["Date"] = (df['Departure Date']).dt.date
 
-        df_traffic = df.groupby(["Departure Hardour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+        df_traffic = df.groupby(["Departure Harbour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
 
     df_traffic = merge_topn(df_traffic)
         
@@ -132,9 +135,9 @@ def get_map_data_extended(data):
             my_df: The corresponding dataframe
     '''
     # Sélectionne quelques colonnes
-    df = data[["Id","Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]]
+    df = data[["Id","Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
-    df = df.groupby(["Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]).count()
+    df = df.groupby(["Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]).count()
     #return dataframe
     df = df.reset_index()
     df.columns = ['Trafic' if x=='Id' else x for x in df.columns]
@@ -151,10 +154,11 @@ def get_map_data(data):
         Returns:
             my_df: The corresponding dataframe
     '''
+    print(data.columns)
     # Sélectionne quelques colonnes
-    df = data[["Id","Departure Hardour","Departure Latitude","Departure Longitude", "Departure Region"]]
+    df = data[["Id","Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
-    df = df.groupby(["Departure Hardour", "Departure Region"]).agg(
+    df = df.groupby(["Departure Harbour", "Departure Region"]).agg(
         {"Departure Latitude":'mean',
         "Departure Longitude":'mean',
         "Id": 'count'}
@@ -166,7 +170,7 @@ def get_map_data(data):
 
 
 #les ports vituals : 
-#map_data[map_data["Departure Hardour"].str.contains("Virtual")]
+#map_data[map_data["Departure Harbour"].str.contains("Virtual")]
 
 
 def get_barchart_data(data):
@@ -180,9 +184,9 @@ def get_barchart_data(data):
     #même données que pour la map sans les géo positions
     # df = get_map_data(data)
 
-    # df = df[["Departure Hardour", "Departure Region","Trafic"]]
+    # df = df[["Departure Harbour", "Departure Region","Trafic"]]
 
-    return data[["Departure Hardour", "Departure Region","Trafic"]]
+    return data[["Departure Harbour", "Departure Region","Trafic"]]
 
 
 def get_sankey_data(dataframe, port_central):
@@ -204,8 +208,8 @@ def get_sankey_data(dataframe, port_central):
                     'Maximum Draugth', 'Arrival Date'], axis=1)
     
     if port_central == "Ports du Canada":
-        df_departure = df_sankey.loc[dataframe['Departure Hardour'].str.contains("Virtual Harbour", case=False)]
-        df_arrival = df_sankey.loc[dataframe['Arrival Hardour'].str.contains("Virtual Harbour", case=False)]
+        df_departure = df_sankey.loc[dataframe['Departure Harbour'].str.contains("Virtual Harbour", case=False)]
+        df_arrival = df_sankey.loc[dataframe['Arrival Harbour'].str.contains("Virtual Harbour", case=False)]
         
         #Count number of occurences
         Nb_departure_international = df_departure.shape[0]
@@ -223,12 +227,12 @@ def get_sankey_data(dataframe, port_central):
         
     else:
         #Filter with the right central harbour
-        df_departure = df_sankey.loc[dataframe['Arrival Hardour'] == port_central]
-        df_arrival = df_sankey.loc[dataframe['Departure Hardour'] == port_central]
+        df_departure = df_sankey.loc[dataframe['Arrival Harbour'] == port_central]
+        df_arrival = df_sankey.loc[dataframe['Departure Harbour'] == port_central]
 
         #Count number of occurences
-        df_departure = df_departure['Departure Hardour'].value_counts()
-        df_arrival = df_arrival['Arrival Hardour'].value_counts()
+        df_departure = df_departure['Departure Harbour'].value_counts()
+        df_arrival = df_arrival['Arrival Harbour'].value_counts()
         
         #Returns the two dataframes
         return df_departure, df_arrival
@@ -252,7 +256,7 @@ def get_linechart_data(data):
 
     df = df.reset_index().drop(["level_0", "index"], axis=1)
 
-    df = df.groupby(["Departure Hardour","month-day"]).sum().reset_index()
+    df = df.groupby(["Departure Harbour","month-day"]).sum().reset_index()
 
     df['month-day'] = df['month-day'].apply(lambda x: "0000-"+x)
     

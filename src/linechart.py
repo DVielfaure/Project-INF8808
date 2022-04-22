@@ -12,7 +12,7 @@ def get_linechart(linechart_data,harbour=None):
 
 
     if harbour != None:
-        df = linechart_data[linechart_data["Departure Hardour"]== harbour]
+        df = linechart_data[linechart_data["Departure Harbour"]== harbour]
         df = df.groupby(["month-day"]).sum().reset_index()
         
 

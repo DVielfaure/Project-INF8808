@@ -57,8 +57,6 @@ boxplot_data = data.drop_duplicates(subset = ["Id"])
 
 #figures
 
-zoom_init = {'geo.projection.rotation.lon': -92.46259526553834, 'geo.center.lon': -92.46259526553834, 'geo.center.lat': 54.75637743691583, 'geo.projection.scale':3.4822022531844983}
-
 fig_map = map_viz.get_map(map_data_departure)
 
 fig_bar = map_viz.get_barchart(barchart_data,100)
@@ -105,7 +103,7 @@ html.Div([
                 
                 html.Div([dcc.Dropdown(
                     id="harbour_dropdown",
-                    options=[{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()],
+                    options=[{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Harbour"].unique()],
                     placeholder="Harbour",
                 )], className="grow-1"),
                 
@@ -191,7 +189,7 @@ def update_selection(slider_value, region_value, harbour_value, clickData, selec
             if clickData != None:
 
                 selection_data["type"] = "Harbour"
-                selection_data["value"] = clickData["Departure Hardour"]
+                selection_data["value"] = clickData["Departure Harbour"]
 
 
         #si le slider est utilisé
@@ -343,7 +341,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,figure):
     if input_id == "slider_updatemode":
 
         if harbour_dropdown != None: 
-            harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
+            harbour_data = map_data_departure[map_data_departure["Departure Harbour"]==harbour_dropdown]
 
             lat = harbour_data.iloc[0]["Departure Latitude"]
             lon = harbour_data.iloc[0]["Departure Longitude"]
@@ -382,7 +380,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown,figure):
         print("update zoom port")
         if harbour_dropdown != None:
 
-            harbour_data = map_data_departure[map_data_departure["Departure Hardour"]==harbour_dropdown]
+            harbour_data = map_data_departure[map_data_departure["Departure Harbour"]==harbour_dropdown]
 
             lat = harbour_data.iloc[0]["Departure Latitude"]
             lon = harbour_data.iloc[0]["Departure Longitude"]
@@ -433,9 +431,9 @@ def update_barchart(region_dropdown,slider_value):
 def update_dropdown_harbour(region_value):
 
     if region_value == None:
-        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Hardour"].unique()]
+        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data["Departure Harbour"].unique()]
     else:
-        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Hardour"].unique()]
+        options = [{'label':x.casefold().title(), 'value': x} for x in barchart_data[barchart_data["Departure Region"]==region_value]["Departure Harbour"].unique()]
 
     return options
 

@@ -30,7 +30,7 @@ def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.785
         data,
         lat="Departure Latitude",
         lon="Departure Longitude",
-        text= "Departure Hardour",
+        text= "Departure Harbour",
         #color=data["Departure Region"]
         color=data["Trafic"]
     )
@@ -66,7 +66,7 @@ def get_barchart(data,lim=0):
     fig = go.Figure(
         data=[go.Bar(
             x=data_graph["Trafic"],
-            y= data_graph["Departure Hardour"],
+            y= data_graph["Departure Harbour"],
             orientation="h",
             #width=5,
             base="overlay",
