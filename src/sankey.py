@@ -48,7 +48,8 @@ def trace_sankey(df_departure, df_arrival, port_central):
           thickness = 20,
           line = dict(color = "grey", width = 0.0),
           label = label,
-          color = ["blue", "blue", "blue", "blue", "blue", "blue", "gray", "blue", "blue", "blue", "blue", "blue", "blue"]
+          #color = ["blue", "blue", "blue", "blue", "blue", "blue", "gray", "blue", "blue", "blue", "blue", "blue", "blue"]
+          color = ["rgb(13,8,135)" for k in range(6)] + ["gray"] + ["rgb(13,8,135)" for k in range(6)]
         ),
         link = dict(
           source = [0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6],
@@ -67,7 +68,8 @@ def trace_sankey(df_departure, df_arrival, port_central):
           thickness = 20,
           line = dict(color = "grey", width = 0.0),
           label = label,
-          color = ["blue", "blue", "gray", "blue", "blue"]
+          #color = ["blue", "blue", "gray", "blue", "blue"]
+          color = ["rgb(13,8,135)" for k in range(2)] + ["gray"] + ["rgb(13,8,135)" for k in range(2)]
         ),
         link = dict(
           source = [0, 1, 2, 2],
