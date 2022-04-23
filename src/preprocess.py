@@ -74,53 +74,6 @@ def filter_df(df, scale, place):
 
     return df_cop
 
-def merge_topn(df):
-    
-    #Create list of larger ship categories
-    df_traffic_topn = df.groupby(['Vessel Type']).sum()
-    df_traffic_topn =df_traffic_topn.nlargest(9,"Traffic").reset_index()
-    topn = df_traffic_topn["Vessel Type"].unique()
-    
-    #Separating df in top and bottom categories
-    df_traffic_top = df[df['Vessel Type'].isin(topn)]
-    df_traffic_bottom = df[~df['Vessel Type'].isin(topn)]
-
-    #Merging bottom
-    df_traffic_bottom = df_traffic_bottom.groupby(['Date', "Departure Harbour"]).sum().reset_index()
-    df_traffic_bottom["Vessel Type"] = "OTHERS"
-
-    #Merging top and bottom
-    df_traffic_total = pd.concat([df_traffic_top,df_traffic_bottom]).reset_index()
-
-    return df_traffic_total
-
-
-def traffic_per_time(df, scale="year", place_scale=""):
-    '''
-        Converts the date to datetime format.
-
-        Args:
-            df: The source df 
-        Returns:
-            df: The traffic dataframe group by year and harbour
-    '''
-    #convertion in datetime 
-    convert_datetime(df) 
-    
-    if scale == "year":
-        df['Date']= (df['Departure Date']).dt.year
-
-        df_traffic = df.groupby(["Departure Harbour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
-    
-    if scale == "day":
-        df["Date"] = (df['Departure Date']).dt.date
-
-        df_traffic = df.groupby(["Departure Harbour","Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
-
-    df_traffic = merge_topn(df_traffic)
-        
-    return df_traffic
-
 def merge_topn_bar(df):
     
     #Create list of larger ship categories
@@ -241,13 +194,12 @@ def get_sankey_data(dataframe, type, value):
     '''
     
     #Drop unnecessary columns
-    dataframe = dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
+    df_sankey = dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
                     'Departure Latitude', 'Departure Longitude',
                     'Arrival Longitude', 'Arrival Latitude',
                     'Vessel Type', 'DeadWeight Tonnage',
                     'Maximum Draugth', 'Arrival Date', "Date"], axis=1)
-    df_sankey = dataframe.copy()
-        
+
     if type == "All":
         df_departure = df_sankey.loc[dataframe['Departure Harbour'].str.contains("Virtual Harbour", case=False)]
         df_arrival = df_sankey.loc[dataframe['Arrival Harbour'].str.contains("Virtual Harbour", case=False)]
@@ -275,7 +227,7 @@ def get_sankey_data(dataframe, type, value):
         #Concatenate lists for sankey
         label = []
         label.extend(list_arrival_harbours)
-        label.append(value)
+        label.append("Ports du Canada")
         label.extend(list_departure_harbours)
         
         sankey_values=[]
@@ -400,7 +352,7 @@ def get_bar_traffic_data(df, time_scale):
 def get_linechart_data(data):
 
     df = traffic_per_time_bar(data, scale="day")
-    df["month-day"]=df["Date"].apply(lambda x: '0000-'+x.strftime('%m-%d'))
+    df["month-day"]=df["Date"].apply(lambda x: x.strftime('0000-'+'%m-%d'))
     df = df.groupby(["month-day"]).sum().reset_index()
 
     return df[['month-day', 'Traffic']]
