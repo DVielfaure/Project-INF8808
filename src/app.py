@@ -36,11 +36,13 @@ app.title = 'Projet Xperts Solutions'
 #Read csv and create dataframe
 # start = time.time()
 data = preprocess.create_dataframe_from_csv()
+
 # pickle.dump(data, open("data.p", "wb"))
 # data = pickle.load(open("data.p", "rb"))
 
 map_data_departure = preprocess.get_map_data(data)
 barchart_data = preprocess.get_barchart_data(map_data_departure)
+
 linechart_data = preprocess.get_linechart_data(data, type="Harbour")
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
 sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")

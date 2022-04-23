@@ -2,14 +2,17 @@ import plotly.express as px
 
 
 def trace_bar_chart(df, port):
-    
+    colors_prism = px.colors.qualitative.Prism
+    colors = ['#0b2e88'] + colors_prism[:5] + ['#ffee6f'] + colors_prism[5:8] + ['#d192f0'] + [colors_prism[8]]
+
     fig = px.bar(
          df, 
          x="Date", 
          y="Traffic", 
          color="Vessel Type", 
          hover_data=['Traffic', 'Vessel Type'],
-         title="Evolution du traffic du port"
+         title="Evolution du traffic du port",
+         color_discrete_sequence=colors
     )
     fig.update_layout(
         title_text="Evolution du traffic",

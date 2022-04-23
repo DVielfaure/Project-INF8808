@@ -72,6 +72,7 @@ def filter_df(df, scale, place):
         df = df[df["Departure Region"] == place ]
     if scale == "harbour":
         df = df[df["Departure Harbour"] == place ]
+
     return df
 
 
@@ -79,9 +80,8 @@ def merge_topn(df):
     
     #Create list of larger ship categories
     df_traffic_topn = df.groupby(['Vessel Type']).sum()
-    df_traffic_topn =df_traffic_topn.nlargest(10,"Traffic").reset_index()
+    df_traffic_topn =df_traffic_topn.nlargest(9,"Traffic").reset_index()
     topn = df_traffic_topn["Vessel Type"].unique()
-
     
     #Separating df in top and bottom categories
     df_traffic_top = df[df['Vessel Type'].isin(topn)]
@@ -396,7 +396,6 @@ def get_sankey_data(dataframe, type, value):
 
 def get_bar_traffic_data(df, time_scale, spatial_scale, place):
     df_cop = df.copy()
-    # df_cop = correct_data(df_cop)
 
     df_cop = filter_df(df_cop, spatial_scale, place)
     df_cop = traffic_per_time_bar_traffic(df_cop, time_scale, spatial_scale)
