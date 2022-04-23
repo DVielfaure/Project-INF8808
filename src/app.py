@@ -235,7 +235,7 @@ def affichage_selection(selection_data):
 def update_viz(selection_data):
     filtered_df = preprocess.filter_df(data, selection_data["type"], selection_data["value"])
 
-    fig__boxplot = boxplot.update_traces_boxplot(filtered_df, fig_boxplot, selection_data["type"], selection_data["value"])
+    fig__boxplot = draw_boxplot(filtered_df, selection_data["type"])
 
     linechart_data = preprocess.get_linechart_data(filtered_df)
     fig__linechart = linechart.get_linechart(linechart_data)
@@ -248,6 +248,12 @@ def update_viz(selection_data):
 
     return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
 
+
+def draw_boxplot(data, selection_type):
+    if selection_type == "All":
+        return boxplot.update_traces_boxplot(boxplot_data, fig_boxplot)
+    
+    return boxplot.update_traces_boxplot(data.drop_duplicates(subset = ["Id"]), fig_boxplot)
 
 ### callback pour la map
 
