@@ -53,7 +53,7 @@ linechart_data = preprocess.get_linechart_data(data)
 fig_linechart = linechart.get_linechart(linechart_data)
 
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year")
-fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "all")
+fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "All")
 
 sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], sankey_data[2])
@@ -241,7 +241,7 @@ def update_viz(selection_data):
     fig__linechart = linechart.get_linechart(linechart_data)
 
     bar_traffic_data = preprocess.get_bar_traffic_data(filtered_df, time_scale="year")
-    fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
+    fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["type"])
 
     sankey_data = preprocess.get_sankey_data(data, type= selection_data["type"], value=selection_data["value"])
     fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])

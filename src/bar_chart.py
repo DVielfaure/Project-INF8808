@@ -1,7 +1,7 @@
 import plotly.express as px
 
 
-def trace_bar_chart(df, port):
+def trace_bar_chart(df, type):
     colors_prism = px.colors.qualitative.Prism
     colors = ['#0b2e88'] + colors_prism[:5] + ['#ffee6f'] + colors_prism[5:8] + ['#d192f0'] + [colors_prism[8]]
 
@@ -21,7 +21,7 @@ def trace_bar_chart(df, port):
     )
     fig.update_xaxes(range = [2010,2022])
 
-    if port == "all":
+    if type == "All":
         fig.update_layout(
             title_text="Evolution du trafic au Canada", 
             title_x=0.5,
