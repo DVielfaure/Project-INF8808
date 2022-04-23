@@ -69,11 +69,11 @@ def filter_df(df, scale, place):
     example: filter on cleveland harbour:
     df = filter_df(df,"harbour","Cleveland")
     '''
-    if scale == "all":
+    if scale == "All":
         df = df
-    if scale == "region":
+    if scale == "Region":
         df = df[df["Departure Region"] == place ]
-    if scale == "harbour":
+    if scale == "Harbour":
         df = df[df["Departure Harbour"] == place ]
 
     return df

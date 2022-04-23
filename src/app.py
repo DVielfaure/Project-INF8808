@@ -47,7 +47,7 @@ linechart_data = preprocess.get_linechart_data(data, type="Harbour")
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
 sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
 # sankey_data = pickle.load(open("sankey-data.p", "rb"))
-bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="all", place="")
+bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="All", place="")
 # bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
 boxplot_data = data.drop_duplicates(subset = ["Id"])
 
@@ -246,46 +246,26 @@ def update_viz(selection_data):
     print(selection_data["slider"])
     
     if selection_data["type"] == "Region":
-        
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, selection_data["value"], None)
-        
-        sankey_data = preprocess.get_sankey_data(data, type= "Region", value=selection_data["value"])
-        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
-
-        linechart_data = preprocess.get_linechart_data(data,type= "Region")
-        fig__linechart = linechart.get_linechart(linechart_data, type= "Region",value=selection_data["value"])
-
-        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="region", place=selection_data["value"])
-        fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
-
-        return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
 
     if selection_data["type"] == "Harbour":
-        
         fig__boxplot = boxplot.update_traces_boxplot(data, fig_boxplot, None, selection_data["value"])
 
-        sankey_data = preprocess.get_sankey_data(data, type= "Harbour",value=selection_data["value"])
-        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
-
-        bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="harbour", place=selection_data["value"])
-        fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
-
-        linechart_data = preprocess.get_linechart_data(data,type= "Harbour")
-        fig__linechart = linechart.get_linechart(linechart_data, type= "Harbour", value=selection_data["value"])
-
-        return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
-    
     if selection_data["type"] == "All":
+        fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)    
 
-        fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)
 
-        sankey_data = preprocess.get_sankey_data(data, type= "All", value= "Ports du Canada")
-        fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
+    sankey_data = preprocess.get_sankey_data(data, type= selection_data["type"], value=selection_data["value"])
+    fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])
 
-        linechart_data = preprocess.get_linechart_data(data,type= "All")
-        fig__linechart = linechart.get_linechart(linechart_data, type= "All")
-       
-        return fig__boxplot, fig__sankey, dash.no_update, fig__linechart
+    linechart_data = preprocess.get_linechart_data(data,type= selection_data["type"])
+    fig__linechart = linechart.get_linechart(linechart_data, type= selection_data["type"],value=selection_data["value"])
+
+    bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale=selection_data["type"], place=selection_data["value"])
+    fig__bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, selection_data["value"])
+
+
+    return fig__boxplot, fig__sankey, fig__bar_traffic, fig__linechart
 
 
 ### callback pour la map
