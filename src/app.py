@@ -45,7 +45,7 @@ barchart_data = preprocess.get_barchart_data(map_data_departure)
 
 linechart_data = preprocess.get_linechart_data(data, type="Harbour")
 # linechart_data = pickle.load(open("linechart-data.p", "rb"))
-sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
+sankey_data = preprocess.get_sankey_data(data, type="All", value= None)
 # sankey_data = pickle.load(open("sankey-data.p", "rb"))
 bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year", spatial_scale="All", place="")
 # bar_traffic_data = pickle.load(open("bar-traffic-data.p", "rb"))
@@ -253,7 +253,6 @@ def update_viz(selection_data):
 
     if selection_data["type"] == "All":
         fig__boxplot = boxplot.update_traces_boxplot(boxplot_data, fig_boxplot, None, None)    
-
 
     sankey_data = preprocess.get_sankey_data(data, type= selection_data["type"], value=selection_data["value"])
     fig__sankey = sankey.trace_sankey(sankey_data[0],sankey_data[1], sankey_data[2])

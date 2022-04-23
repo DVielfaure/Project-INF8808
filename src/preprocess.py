@@ -282,7 +282,7 @@ def get_sankey_data(dataframe, type, value):
         #Concatenate lists for sankey
         label = []
         label.extend(list_arrival_harbours)
-        label.append(value)
+        label.append("Ports du Canada")
         label.extend(list_departure_harbours)
         
         sankey_values=[]
