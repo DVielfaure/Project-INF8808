@@ -66,13 +66,12 @@ def filter_df(df, scale, place):
     example: filter on cleveland harbour:
     df = filter_df(df,"harbour","Cleveland")
     '''
-    df_cop = df.copy()
     if scale == "Region":
-        df_cop = df_cop[df_cop["Departure Region"] == place ]
+        return df[df["Departure Region"] == place ]
     if scale == "Harbour":
-        df_cop = df_cop[df_cop["Departure Harbour"] == place ]
+        return df[df["Departure Harbour"] == place ]
 
-    return df_cop
+    return df
 
 def merge_topn_bar(df):
     
