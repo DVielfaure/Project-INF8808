@@ -40,11 +40,11 @@ def trace_boxplot(df):
     return fig
 
 
-def update_traces_boxplot(df, fig, region, harbour):
-    if (harbour != None):
-        data = df[df['Departure Harbour'] == harbour].drop_duplicates(subset = ["Id"])
-    elif (region != None):
-        data = df[df['Departure Region'] == region].drop_duplicates(subset = ["Id"])
+def update_traces_boxplot(df, fig, type, value):
+    if (type == 'Harbour'):
+        data = df[df['Departure Harbour'] == value].drop_duplicates(subset = ["Id"])
+    elif (type == 'Region'):
+        data = df[df['Departure Region'] == value].drop_duplicates(subset = ["Id"])
     else: 
         data = df
 
