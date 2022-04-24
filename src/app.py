@@ -198,8 +198,8 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
         ctx = dash.callback_context
         input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
-        print("update selection : ")
-
+        print("update selection : ", input_id)
+        
         #selection sur le bargraph
         if input_id == "barchart":
             print("clickData",clickData_bar)
@@ -210,7 +210,7 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 
         #clickData ne fonctionne pas et je ne sais pas pourquoi
         #si on a cliqué sur un port sur le carte
-        if input_id == "map_departure":
+        elif input_id == "map_departure":
             print("clickData =",clickData)
 
             if clickData != None:
@@ -220,22 +220,34 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 
 
         #si le slider est utilisé
-        if input_id == "slider_updatemode":
+        elif input_id == "slider_updatemode":
             selection_data["slider"] = int(10**slider_value)
 
         #si un port est sélectionné
-        if input_id == "harbour_dropdown":
-            selection_data["type"] = "Harbour"
-            selection_data["value"] = harbour_value
-            selection_data["slider"] = 0
+        elif input_id == "harbour_dropdown":
+            print(harbour_value)
+            if harbour_value == None and region_value != None:
+                selection_data["type"] = "Region"
+                selection_data["value"] = region_value
+                selection_data["slider"] = 0
+
+            elif harbour_value == None and region_value == None:
+                selection_data["type"] = "All"
+                selection_data["value"] = None
+                selection_data["slider"] = 0
+
+            elif harbour_value != None : 
+                selection_data["type"] = "Harbour"
+                selection_data["value"] = harbour_value
+                selection_data["slider"] = 0
 
         #si region sélectionnée
-        if input_id == "region_dropdown":
+        elif input_id == "region_dropdown":
             selection_data["type"] = "Region"
             selection_data["value"] = region_value
 
         #si rien de sélectionné
-        if selection_data["value"] == None:
+        elif selection_data["value"] == None:
             selection_data["type"] = "All"
 
         print(selection_data)
@@ -416,7 +428,12 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
 
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value),lat=lat, lon= lon, zoom=8.7)
 
-        else: 
+        elif harbour_dropdown == None and region_dropdown != None: 
+            zoom = zooms[region_dropdown]
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), lat=zoom["lat"], lon= zoom['lon'],zoom = zoom["scale"])
+         
+
+        elif harbour_dropdown == None and region_dropdown == None:
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), zoom = 8.7)
 
         return dash.no_update, figure

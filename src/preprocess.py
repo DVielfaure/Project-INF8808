@@ -375,7 +375,7 @@ def get_linechart_data(data):
 
 
     df = df.rename(columns={"Date":"Month"})
-    print(df["Month"])
+    
     df["Month"] = df["Month"].apply(lambda x: months[int(x)-1])
 
     return df
