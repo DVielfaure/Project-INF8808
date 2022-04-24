@@ -272,14 +272,14 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 def affichage_selection(selection_data):
 
     if selection_data["type"] == "Region": 
-        return "Ports de la region:  "+ selection_data["value"]
+        return "Harbours in "+ selection_data["value"]
 
     if selection_data["type"] == "Harbour":
         
-        return "Port "+  selection_data["value"].casefold().title()
+        return "Harbour of "+  selection_data["value"]
     
     if selection_data["type"] == "All":
-        return "Tous les ports du Canada"
+        return "All Harbours"
 
 
 #update viz lorsque selection change
