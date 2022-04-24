@@ -38,6 +38,10 @@ def create_dataframe_from_csv():
 
     #raccourci "Merchant Chemical/Oil Products Tanker" en "Merchant Chemical/Oil" pour que la légende prenne moins de place 
     dataframe = dataframe.replace("Merchant Chemical/Oil Products Tanker","Merchant Chemical/Oil")
+
+    #.str.casefold().str.title()
+    dataframe["Departure Harbour"] = dataframe["Departure Harbour"].str.casefold().str.title()
+
     return dataframe
 
 
@@ -371,7 +375,7 @@ def get_linechart_data(data):
 
 
     df = df.rename(columns={"Date":"Month"})
-
-    df["Month"] = df["Month"].apply(lambda x: months[x-1])
+    print(df["Month"])
+    df["Month"] = df["Month"].apply(lambda x: months[int(x)-1])
 
     return df
