@@ -243,8 +243,20 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 
         #si region sélectionnée
         elif input_id == "region_dropdown":
-            selection_data["type"] = "Region"
-            selection_data["value"] = region_value
+            if harbour_value == None and region_value == None:
+                selection_data["type"] = "All"
+                selection_data["value"] = None
+                selection_data["slider"] = 0
+
+            elif harbour_value != None and region_value == None:
+                selection_data["type"] = "Harbour"
+                selection_data["value"] = harbour_value
+                selection_data["slider"] = 0
+    
+            elif region_value != None:
+                selection_data["type"] = "Region"
+                selection_data["value"] = region_value
+                selection_data["slider"] = 0
 
         #si rien de sélectionné
         elif selection_data["value"] == None:
@@ -408,12 +420,19 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
         if region_dropdown != None:
             zoom = zooms[region_dropdown]
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), lat=zoom["lat"], lon= zoom['lon'],zoom = zoom["scale"])
-            return dash.no_update, figure
-
-        else:
+            
+        elif region_dropdown == None and harbour_dropdown == None:
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
 
-            return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
+        elif region_dropdown == None and harbour_dropdown != None:
+            harbour_data = map_data_departure[map_data_departure["Departure Harbour"]==harbour_dropdown]
+
+            lat = harbour_data.iloc[0]["Departure Latitude"]
+            lon = harbour_data.iloc[0]["Departure Longitude"]
+
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value),lat=lat, lon= lon, zoom=8.7)
+
+        return dash.no_update, figure
    
     #si un port est sélectionné
     ##centre la carte sur le port sélectionné + TODO mise en couleur/augmentation taille
@@ -434,7 +453,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
          
 
         elif harbour_dropdown == None and region_dropdown == None:
-            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), zoom = 8.7)
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
 
         return dash.no_update, figure
 
