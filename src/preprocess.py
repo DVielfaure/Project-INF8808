@@ -113,7 +113,12 @@ def traffic_per_time_bar(df, scale="year"):
         df['Date']= (df['Departure Date']).dt.year
 
         df_traffic = df.groupby(["Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
-    
+
+    if scale == "month":
+        df['Date']= (df['Departure Date']).dt.month
+
+        df_traffic = df.groupby(["Date","Vessel Type"]).size().to_frame(name="Traffic").reset_index()
+
     if scale == "day":
         df["Date"] = (df['Departure Date']).dt.date
 
@@ -351,10 +356,22 @@ def get_bar_traffic_data(df, time_scale):
     df = df.drop(df.columns[0], axis=1)
     return df
 
+months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+          'August', 'September', 'October', 'November', 'December']
+
 def get_linechart_data(data):
 
-    df = traffic_per_time_bar(data, scale="day")
-    df["month-day"]=df["Date"].apply(lambda x: x.strftime('0000-'+'%m-%d'))
-    df = df.groupby(["month-day"]).sum().reset_index()
+    df = traffic_per_time_bar(data, scale="month")
+    df = df.drop("Vessel Type",1)
 
-    return df[['month-day', 'Traffic']]
+    temp = pd.DataFrame([[x,0] for x in range(1,13)], columns = ["Date", "Traffic"])
+
+    df = pd.concat([df, temp])
+    df = df.groupby("Date").sum().reset_index()
+
+
+    df = df.rename(columns={"Date":"Month"})
+
+    df["Month"] = df["Month"].apply(lambda x: months[x-1])
+
+    return df
