@@ -184,19 +184,29 @@ html.Div([
 
 ##### CALLBACKS #####
 
+
 #update selection 
 @app.callback(Output('selection_data','data'),
              [Input('slider_updatemode', 'value'),
               Input('region_dropdown','value'),
               Input('harbour_dropdown','value'),
-              Input('map_departure','clickData')],
+              Input('map_departure','clickData'),
+              Input("barchart", "clickData")],
               [State('selection_data','data')])
-def update_selection(slider_value, region_value, harbour_value, clickData, selection_data):
+def update_selection(slider_value, region_value, harbour_value, clickData, clickData_bar, selection_data):
 
         ctx = dash.callback_context
         input_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
         print("update selection : ")
+
+        #selection sur le bargraph
+        if input_id == "barchart":
+            print("clickData",clickData_bar)
+            if clickData_bar != None:
+                
+                selection_data["type"] = "Harbour"
+                selection_data["value"] = clickData_bar["points"][0]['y']
 
         #clickData ne fonctionne pas et je ne sais pas pourquoi
         #si on a cliqué sur un port sur le carte
@@ -206,7 +216,7 @@ def update_selection(slider_value, region_value, harbour_value, clickData, selec
             if clickData != None:
 
                 selection_data["type"] = "Harbour"
-                selection_data["value"] = clickData["Departure Harbour"]
+                selection_data["value"] = clickData["points"][0]['y']
 
 
         #si le slider est utilisé
@@ -332,14 +342,30 @@ zooms = {
                 Output('map_departure','figure')],
               [Input('slider_updatemode', 'value'),
               Input('region_dropdown','value'),
-              Input('harbour_dropdown','value')],
+              Input('harbour_dropdown','value'),
+               Input("barchart", "clickData")],
               [State('map_departure','figure')])
-def update_map(slider_value,region_dropdown, harbour_dropdown,figure):
+def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, figure):
     print("zoom =",figure["layout"]["mapbox"]["zoom"])
 
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
-      
+    
+    #si sélection sur le barchart
+    if input_id == "barchart":
+        print("clickData =",clickData_bar)
+
+        if clickData_bar != None:
+            harbour_value = clickData_bar["points"][0]['y']
+            harbour_data = map_data_departure[map_data_departure["Departure Harbour"]==harbour_value]
+            
+            lat = harbour_data.iloc[0]["Departure Latitude"]
+            lon = harbour_data.iloc[0]["Departure Longitude"]
+
+            figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value),lat=lat, lon= lon, zoom=8.7)
+
+        return dash.no_update, figure
+
     #si le slider est modifié
     if input_id == "slider_updatemode":
 

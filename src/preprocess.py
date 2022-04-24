@@ -33,8 +33,11 @@ def create_dataframe_from_csv():
 
     dataframe = reduce(lambda left,right: left.join(right), results)
     
+    #correction typo Hardour
     dataframe = dataframe.rename(columns={'Departure Hardour':'Departure Harbour', 'Arrival Hardour':'Arrival Harbour' })
 
+    #raccourci "Merchant Chemical/Oil Products Tanker" en "Merchant Chemical/Oil" pour que la légende prenne moins de place 
+    dataframe = dataframe.replace("Merchant Chemical/Oil Products Tanker","Merchant Chemical/Oil")
     return dataframe
 
 
