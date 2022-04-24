@@ -1,5 +1,6 @@
 *.DS_Store
 src/data/TRIP.csv
+src/data.p
 venv
 requirements.txt
 __pycache__
