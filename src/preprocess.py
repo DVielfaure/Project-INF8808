@@ -197,7 +197,7 @@ def get_sankey_data(dataframe, type, value):
                     'Departure Latitude', 'Departure Longitude',
                     'Arrival Longitude', 'Arrival Latitude',
                     'Vessel Type', 'DeadWeight Tonnage',
-                    'Maximum Draugth', 'Arrival Date', "Date"], axis=1)
+                    'Maximum Draugth', 'Arrival Date'], axis=1)
 
     if type == "All":
         df_departure = df_sankey.loc[dataframe['Departure Harbour'].str.contains("Virtual Harbour", case=False)]
