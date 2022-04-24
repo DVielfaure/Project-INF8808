@@ -55,7 +55,7 @@ def trace_sankey(label, sankey_values, central_node_index):
         target = target_list,
         value = sankey_values,
         hovertemplate='Provenance: %{source.label}<br>'+
-          'Destination: %{target.label}<br/>Traffic: %{value}<extra></extra>'
+          'Destination: %{target.label}<br>Traffic: %{value}<extra></extra>'
       ),
       textfont=dict(size=10)
       )])
