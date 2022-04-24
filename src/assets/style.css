@@ -52,7 +52,7 @@ html, body, #react-entry-point, .content {
     height: 100%;
 }
 
-.trafic-port {
+.traffic-port {
     flex: 1 1 auto;
     overflow-y: auto;
     height: 200px;

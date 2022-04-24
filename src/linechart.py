@@ -8,7 +8,7 @@ def get_linechart(linechart_data):
     
     fig = px.bar(linechart_data, x="Month", y="Traffic")
     fig.update_layout(
-        title="Achalandage sur l'année",
+        title="Traffic over the year",
         title_x=0.5,
         margin=dict(l=14, r=14, t=32, b=14, pad=0),
         xaxis_title=None,

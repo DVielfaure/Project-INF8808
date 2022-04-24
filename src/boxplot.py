@@ -3,7 +3,7 @@ from plotly.subplots import make_subplots
 
 MAX_DISPLAYED_POINTS = 99999
 df_col = ['Lenght', 'Width', 'DeadWeight Tonnage', 'Maximum Draugth']
-x_title = ['Longueur (m)', 'Largeur (m)', 'Charge Maximale (kg)', "Tirant d'eau maximal (m)"]
+x_title = ['Lenght (m)', 'Width (m)', 'DeadWeight Tonnage (kg)', "Maximum Draugth (m)"]
 colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)', 'rgba(255, 65, 54, 0.5)']
 
 def showScatter(df_size):
@@ -35,7 +35,7 @@ def trace_boxplot(df):
         position += 1
 
     fig.update_layout(
-        title='Distribution des dimensions des navires',
+        title='Distribution of vessel characteristics',
         showlegend=False,
         title_x=0.5,
         margin=dict(l=14, r=14, t=32, b=14, pad=0),

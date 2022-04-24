@@ -12,17 +12,17 @@ import plotly.express as px
 
 def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.7852661802888283):
     """
-    Create the map figure Departure trafic.
+    Create the map figure Departure traffic.
 
         Args:
-            data: data of harbour trafic filter on "Arrival" or "Departure"
-            lim: minimal number of trafic for each harbour to be shown
+            data: data of harbour traffic filter on "Arrival" or "Departure"
+            lim: minimal number of traffic for each harbour to be shown
             
         Returns:
             fig: The updated figure 
     
     """
-    #filtre des données sur la limite de trafic
+    #filtre des données sur la limite de traffic
     data = data[data["Trafic"]>=lim]
     
     #création de la figure "Departure" or "Arrival"
@@ -32,7 +32,9 @@ def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.785
         lon="Departure Longitude",
         text= "Departure Harbour",
         #color=data["Departure Region"]
-        color=data["Trafic"]
+        color=data["Trafic"],
+        #color=["rgb(255,127,80)" if x > 5000 else "rgb(13,8,135)" for x in data["Trafic"]],
+    
     )
 
     fig.update_coloraxes(showscale=False)
@@ -71,9 +73,7 @@ def get_barchart(data,lim=0):
             #width=5,
             base="overlay",
             marker_color = "rgb(13,8,135)"
-            
-
-            )]
+          )]
         )
 
     fig.update_layout(
@@ -86,9 +86,17 @@ def get_barchart(data,lim=0):
         xaxis_position=1,
         yaxis_automargin=True,
         xaxis_autorange=True,
+        plot_bgcolor= "rgba(0, 0, 0, 0)",
         
     
     )
 
+    fig.update_traces(
+        hovertemplate=
+            "Traffic : %{x}"
+            + "<extra></extra>"
+    )
+
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightblue')
 
     return fig

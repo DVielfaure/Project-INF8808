@@ -54,15 +54,15 @@ def trace_sankey(label, sankey_values, central_node_index):
         source = source_list,
         target = target_list,
         value = sankey_values,
-        hovertemplate='Provenance: %{source.label}<br />'+
-          'Destination: %{target.label}<br />Nombre de voyages: %{value}<extra></extra>'
+        hovertemplate='Provenance: %{source.label}<br>'+
+          'Destination: %{target.label}<br/>Traffic: %{value}<extra></extra>'
       ),
       textfont=dict(size=10)
       )])
   
   #Add title
   fig.update_layout(
-    title_text="Flux entrants et flux sortants",
+    title_text="Inflows and outflows",
     title_x=0.5,
     margin=dict(l=14, r=14, t=32, b=14, pad=0),
   )

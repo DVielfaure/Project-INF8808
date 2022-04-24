@@ -102,10 +102,10 @@ html.Div([
 
     html.Div([
         html.Div([
-            html.H2('Trafic maritime', className="titre"),
-            html.Div("par Xperts Solutions Technologies"),
+            html.H2('Marine traffic in Canada', className="titre"), #from 2011 to 2021
+            html.Div("by Xperts Solutions Technologies"),
         ], className="grow-1"),
-        html.H2("Tous les ports",id='selection', className="titre center grow-3"),
+        html.H2("All Harbours",id='selection', className="titre center grow-3"),
     ], className="card m-1 mb-0 d-flex center-items"),
 
     html.Div([ # container
@@ -131,7 +131,7 @@ html.Div([
                 id="barchart",
                 figure= fig_bar,
                 style={'height':max(25*(len(fig_bar.data[0]['y'])),200)}
-            )], className="trafic-port"),
+            )], className="traffic-port"),
 
             dcc.Graph(
                 figure=fig_map,
@@ -140,7 +140,7 @@ html.Div([
             ),
             
             html.H4(
-                "Ports avec plus de 1 bateaux en trafic", 
+                "Harbours with more than 1 ship in traffic", 
                 id='slider_limit_text',
                 className="m-1 center"
             ),
@@ -411,7 +411,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
 
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
         
-        return "Ports avec plus de {0} bateaux en trafic".format(int(transform_value(slider_value))), figure
+        return "Harbours with more than {0} ship in traffic".format(int(transform_value(slider_value))), figure
 
 
     #si une region est sélectionnée
