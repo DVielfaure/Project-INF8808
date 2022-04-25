@@ -1,6 +1,5 @@
 from functools import reduce
 from threading import Thread
-import time
 import pandas as pd
 
 def thread_read_csv(result, index, file_name):
@@ -87,7 +86,6 @@ def merge_topn_bar(df):
     df_traffic_topn = df_traffic_topn.nlargest(10,"Traffic").reset_index()
     topn = df_traffic_topn["Vessel Type"].unique()
 
-    
     #Separating df in top and bottom categories
     df_traffic_top = df[df['Vessel Type'].isin(topn)]
     df_traffic_bottom = df[~df['Vessel Type'].isin(topn)]
@@ -131,35 +129,8 @@ def traffic_per_time_bar(df, scale="year"):
     return df_traffic
 
 
-def get_map_data_extended(data):
-    '''
-        Converts the data to a pandas dataframe.
-
-        Args:
-            data: The source csv data to convert
-        Returns:
-            my_df: The corresponding dataframe
-    '''
-    # Sélectionne quelques colonnes
-    df = data[["Id","Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]]
-    #Groupby selon les ports de départs
-    df = df.groupby(["Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]).count()
-    #return dataframe
-    df = df.reset_index()
-    df.columns = ['Trafic' if x=='Id' else x for x in df.columns]
-   
-    return df
-
-
 def get_map_data(data):
-    '''
-        Converts the data to a pandas dataframe.
-
-        Args:
-            data: The source csv data to convert
-        Returns:
-            my_df: The corresponding dataframe
-    '''
+    
     # Sélectionne quelques colonnes
     df = data[["Id","Departure Harbour","Departure Latitude","Departure Longitude", "Departure Region"]]
     #Groupby selon les ports de départs
@@ -179,18 +150,7 @@ def get_map_data(data):
 
 
 def get_barchart_data(data):
-    '''
-        Converts the data to a pandas dataframe.
-        Args:
-            data: The source csv data to convert
-        Returns:
-            my_df: The corresponding dataframe
-    '''
-    #même données que pour la map sans les géo positions
-    # df = get_map_data(data)
-
-    # df = df[["Departure Harbour", "Departure Region","Trafic"]]
-
+ 
     return data[["Departure Harbour", "Departure Region","Trafic"]]
 
 

@@ -12,11 +12,9 @@ def get_linechart(linechart_data):
         title_x=0.5,
         margin=dict(l=14, r=14, t=32, b=14, pad=0),
         xaxis_title=None,
-        yaxis_title=None,
-        #xaxis_range=["January","December"]
+        yaxis_title=None
     )
 
-    #fig.update_traces(line=dict(color='rgb(13,8,135)',width= 2))
     fig.update_traces(marker_color='rgb(13,8,135)')
     
 

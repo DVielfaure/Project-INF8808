@@ -87,18 +87,8 @@ sankey_data = pickle.load(open("sankey_data.p", "rb"))
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], sankey_data[2])
 
 
-def transform_value(value):
-    return 10 ** value
-
-
 app.layout = \
 html.Div([
-    # html.Div([
-    #     html.P("Loading"),
-    #     html.Div([
-    #         html.Div(className="loading-bar")
-    #     ], className="loading-container"),
-    # ], className="fullpage-container"),
 
     html.Div([
         html.Div([
@@ -178,10 +168,6 @@ html.Div([
 ], className="d-flex flex-column content")
 
 
-#https://www.somesolvedproblems.com/2021/08/how-to-add-vertical-scrollbar-to-plotly.html
-#https://community.plotly.com/t/how-to-add-vertical-scroll-bar-on-horizontal-bar-chart/12342
-
-
 ##### CALLBACKS #####
 
 
@@ -197,12 +183,9 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 
         ctx = dash.callback_context
         input_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-        print("update selection : ", input_id)
-        
+       
         #selection sur le bargraph
         if input_id == "barchart":
-            print("clickData",clickData_bar)
             if clickData_bar != None:
                 
                 selection_data["type"] = "Harbour"
@@ -211,8 +194,6 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
         #clickData ne fonctionne pas et je ne sais pas pourquoi
         #si on a cliqué sur un port sur le carte
         elif input_id == "map_departure":
-            print("clickData =",clickData)
-
             if clickData != None:
 
                 selection_data["type"] = "Harbour"
@@ -225,7 +206,6 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
 
         #si un port est sélectionné
         elif input_id == "harbour_dropdown":
-            print(harbour_value)
             if harbour_value == None and region_value != None:
                 selection_data["type"] = "Region"
                 selection_data["value"] = region_value
@@ -262,7 +242,6 @@ def update_selection(slider_value, region_value, harbour_value, clickData, click
         elif selection_data["value"] == None:
             selection_data["type"] = "All"
 
-        print(selection_data)
         return selection_data
 
 
@@ -370,14 +349,12 @@ zooms = {
                Input("barchart", "clickData")],
               [State('map_departure','figure')])
 def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, figure):
-    print("zoom =",figure["layout"]["mapbox"]["zoom"])
-
+    
     ctx = dash.callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
     
     #si sélection sur le barchart
     if input_id == "barchart":
-        print("clickData =",clickData_bar)
 
         if clickData_bar != None:
             harbour_value = clickData_bar["points"][0]['y']
@@ -411,12 +388,12 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
 
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value))
         
-        return "Harbours with more than {0} ship in traffic".format(int(transform_value(slider_value))), figure
+        return "Harbours with more than {0} ship in traffic".format(int(10**slider_value)), figure
 
 
     #si une region est sélectionnée
     if input_id == "region_dropdown":
-        print("region_dropdown")
+    
         if region_dropdown != None:
             zoom = zooms[region_dropdown]
             figure = map_viz.get_map(map_data_departure,lim= int(10**slider_value), lat=zoom["lat"], lon= zoom['lon'],zoom = zoom["scale"])
@@ -437,7 +414,7 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
     #si un port est sélectionné
     ##centre la carte sur le port sélectionné + TODO mise en couleur/augmentation taille
     if input_id == "harbour_dropdown":
-        print("update zoom port")
+
         if harbour_dropdown != None:
 
             harbour_data = map_data_departure[map_data_departure["Departure Harbour"]==harbour_dropdown]
@@ -464,11 +441,8 @@ def update_map(slider_value,region_dropdown, harbour_dropdown, clickData_bar, fi
                 Output("barchart",'style')],
             [Input('region_dropdown','value'),
             Input('slider_updatemode','value')
-            #,Input('map_chart','relayoutData')
             ])
 def update_barchart(region_dropdown,slider_value):
-
-    #clear value du dropdown
 
     #s'il y a une région de sélectionnée
     if region_dropdown != None:

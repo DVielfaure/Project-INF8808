@@ -3,11 +3,8 @@
 
 '''
 
-#from turtle import width, window_height, window_width
-# from attr import dataclass
 import plotly.graph_objects as go
 import plotly.express as px
-
 
 
 def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.7852661802888283):
@@ -31,10 +28,7 @@ def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.785
         lat="Departure Latitude",
         lon="Departure Longitude",
         text= "Departure Harbour",
-        #color=data["Departure Region"]
-        color=data["Trafic"],
-        #color=["rgb(255,127,80)" if x > 5000 else "rgb(13,8,135)" for x in data["Trafic"]],
-    
+        color=data["Trafic"]    
     )
 
     fig.update_coloraxes(showscale=False)
@@ -52,8 +46,6 @@ def get_map(data,lim=0, lat=64.1446450744138, lon=-93.05198935160519, zoom=1.785
         uirevision = 'something',
         showlegend=False
     )
-            
-    #faire en sorte qu'il n'y ait pas de superposition de points
 
     return fig
 
@@ -70,7 +62,6 @@ def get_barchart(data,lim=0):
             x=data_graph["Trafic"],
             y= data_graph["Departure Harbour"],
             orientation="h",
-            #width=5,
             base="overlay",
             marker_color = "rgb(13,8,135)"
           )]
@@ -78,8 +69,6 @@ def get_barchart(data,lim=0):
 
     fig.update_layout(
         bargap=0.5,
-        # width=300,
-        #height=400,
         margin={"r": 0, "t": 20, "l": 200, "b": 0, "pad":4 , "autoexpand":True},
 
         xaxis_anchor="free",
