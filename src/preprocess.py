@@ -12,9 +12,8 @@ def create_dataframe_from_csv():
     list_csv = ['Id', 'Departure Date', 
             'Departure Hardour', 'Departure Region', 
             'Departure Latitude', 'Departure Longitude', 
-            'Arrival Date', 'Arrival Hardour', 
-            'Arrival Region', 'Arrival Latitude', 
-            'Arrival Longitude', 'Vessel Type', 
+            'Arrival Hardour', 
+            'Arrival Region', 'Vessel Type',
             'Lenght', 'Width', 
             'DeadWeight Tonnage', 'Maximum Draugth']
 
@@ -55,7 +54,7 @@ def convert_datetime(df):
             df: The corrected dataframe
     '''
     df['Departure Date']= pd.to_datetime(df['Departure Date'])
-    df['Arrival Date']= pd.to_datetime(df['Arrival Date']) 
+    # df['Arrival Date']= pd.to_datetime(df['Arrival Date']) 
     return df
     
 
@@ -207,9 +206,8 @@ def get_sankey_data(dataframe, type, value):
     #Drop unnecessary columns
     df_sankey = dataframe.drop(['Id', 'Departure Date', 'Lenght', 'Width',
                     'Departure Latitude', 'Departure Longitude',
-                    'Arrival Longitude', 'Arrival Latitude',
                     'Vessel Type', 'DeadWeight Tonnage',
-                    'Maximum Draugth', 'Arrival Date'], axis=1)
+                    'Maximum Draugth'], axis=1)
 
     if type == "All":
         df_departure = df_sankey.loc[dataframe['Departure Harbour'].str.contains("Virtual Harbour", case=False)]

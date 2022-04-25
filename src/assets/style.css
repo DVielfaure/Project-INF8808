@@ -118,7 +118,7 @@ html, body, #react-entry-point, .content {
   .loading-bar {
     height: 100%;
     background-color: green;
-    animation-duration: 3s;
+    animation-duration: 5s;
     animation-name: loading;
     border-radius: 7px;
   }

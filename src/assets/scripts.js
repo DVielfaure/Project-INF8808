@@ -19,5 +19,5 @@ function waitForElm(selector) {
 }
 
 waitForElm('.fullpage-container').then((elm) => 
-    setTimeout(() => elm.remove(), 3100)
+    setTimeout(() => elm.remove(), 5100)
 );

@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-MAX_DISPLAYED_POINTS = 99999
+MAX_DISPLAYED_POINTS = 1
 df_col = ['Lenght', 'Width', 'DeadWeight Tonnage', 'Maximum Draugth']
 x_title = ['Lenght (m)', 'Width (m)', 'DeadWeight Tonnage (kg)', "Maximum Draugth (m)"]
 colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)', 'rgba(255, 65, 54, 0.5)']

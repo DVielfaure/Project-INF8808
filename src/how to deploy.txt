@@ -1,1 +1,3 @@
 gcloud run deploy --source .
+src name c'est xpert-solution
+region c'est 20

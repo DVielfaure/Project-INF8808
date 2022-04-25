@@ -36,55 +36,73 @@ app.title = 'Projet Xperts Solutions'
 
 #Read csv and create dataframe
 
-if (not exists("./data.p")):
-    data = preprocess.create_dataframe_from_csv()
-    pickle.dump(data, open("data.p", "wb"))
+# if (not exists("./data.p")):
+#     data = preprocess.create_dataframe_from_csv()
+#     pickle.dump(data, open("data.p", "wb"))
 
-data = pickle.load(open("data.p", "rb"))
+# data = pickle.load(open("data.p", "rb"))
 
-if (not exists("./map_data_departure.p")):
-    map_data_departure = preprocess.get_map_data(data)
-    pickle.dump(map_data_departure, open("map_data_departure.p", "wb"))
+# if (not exists("./map_data_departure.p")):
+#     map_data_departure = preprocess.get_map_data(data)
+#     pickle.dump(map_data_departure, open("map_data_departure.p", "wb"))
 
-map_data_departure = pickle.load(open("map_data_departure.p", "rb"))
+# map_data_departure = pickle.load(open("map_data_departure.p", "rb"))
+# fig_map = map_viz.get_map(map_data_departure)
+
+# if (not exists("./barchart_data.p")):
+#     barchart_data = preprocess.get_barchart_data(map_data_departure)
+#     pickle.dump(barchart_data, open("barchart_data.p", "wb"))
+
+# barchart_data = pickle.load(open("map_data_departure.p", "rb"))
+# fig_bar = map_viz.get_barchart(barchart_data,100)
+
+
+# if (not exists("./boxplot_data.p")):
+#     boxplot_data = data.drop_duplicates(subset = ["Id"])
+#     pickle.dump(boxplot_data, open("boxplot_data.p", "wb"))
+
+# boxplot_data = pickle.load(open("boxplot_data.p", "rb"))
+# fig_boxplot = boxplot.trace_boxplot(boxplot_data)
+
+
+# if (not exists("./linechart_data.p")):
+#     linechart_data = preprocess.get_linechart_data(data)
+#     pickle.dump(linechart_data, open("linechart_data.p", "wb"))
+
+# linechart_data = pickle.load(open("linechart_data.p", "rb"))
+# fig_linechart = linechart.get_linechart(linechart_data)
+
+# if (not exists("./bar_traffic_data.p")):
+#     bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year")
+#     pickle.dump(bar_traffic_data, open("bar_traffic_data.p", "wb"))
+
+# bar_traffic_data = pickle.load(open("bar_traffic_data.p", "rb"))
+# fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "All")
+
+# if (not exists("./sankey_data.p")):
+#     sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
+#     pickle.dump(sankey_data, open("sankey_data.p", "wb"))
+
+# sankey_data = pickle.load(open("sankey_data.p", "rb"))
+# fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], sankey_data[2])
+
+
+data = preprocess.create_dataframe_from_csv()
+map_data_departure = preprocess.get_map_data(data)
+barchart_data = preprocess.get_barchart_data(map_data_departure)
+boxplot_data = data.drop_duplicates(subset = ["Id"])
+linechart_data = preprocess.get_linechart_data(data)
+bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year")
+sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
+
 fig_map = map_viz.get_map(map_data_departure)
-
-if (not exists("./barchart_data.p")):
-    barchart_data = preprocess.get_barchart_data(map_data_departure)
-    pickle.dump(barchart_data, open("barchart_data.p", "wb"))
-
-barchart_data = pickle.load(open("map_data_departure.p", "rb"))
 fig_bar = map_viz.get_barchart(barchart_data,100)
-
-
-if (not exists("./boxplot_data.p")):
-    boxplot_data = data.drop_duplicates(subset = ["Id"])
-    pickle.dump(boxplot_data, open("boxplot_data.p", "wb"))
-
-boxplot_data = pickle.load(open("boxplot_data.p", "rb"))
 fig_boxplot = boxplot.trace_boxplot(boxplot_data)
-
-
-if (not exists("./linechart_data.p")):
-    linechart_data = preprocess.get_linechart_data(data)
-    pickle.dump(linechart_data, open("linechart_data.p", "wb"))
-
-linechart_data = pickle.load(open("linechart_data.p", "rb"))
 fig_linechart = linechart.get_linechart(linechart_data)
-
-if (not exists("./bar_traffic_data.p")):
-    bar_traffic_data = preprocess.get_bar_traffic_data(data, time_scale="year")
-    pickle.dump(bar_traffic_data, open("bar_traffic_data.p", "wb"))
-
-bar_traffic_data = pickle.load(open("bar_traffic_data.p", "rb"))
 fig_bar_traffic = bar_chart.trace_bar_chart(bar_traffic_data, "All")
-
-if (not exists("./sankey_data.p")):
-    sankey_data = preprocess.get_sankey_data(data, type="All", value= "Ports du Canada")
-    pickle.dump(sankey_data, open("sankey_data.p", "wb"))
-
-sankey_data = pickle.load(open("sankey_data.p", "rb"))
 fig_sankey = sankey.trace_sankey(sankey_data[0], sankey_data[1], sankey_data[2])
+
+
 
 
 def transform_value(value):
